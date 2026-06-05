@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>达梦医疗行业销售工具包-1分钟 5分钟版</title>
+<style>
+  :root {
+    --blue: #1a6de0; --blue-light: #e8f0fe; --blue-dark: #0d47a1;
+    --red: #d93025; --red-light: #fce8e6;
+    --orange: #e37400; --orange-light: #fef7e0;
+    --bg: #ffffff; --card: #f7f8fa;
+    --text: #1a1a1a; --text-secondary: #5f6368;
+    --border: #e8eaed; --radius: 12px; --radius-sm: 8px;
+    --safe-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+    padding-bottom: calc(72px + var(--safe-bottom));
+  }
+
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border); padding: 14px 20px 12px;
+  }
+  .header-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  .audience-toggle { display: flex; margin: 16px 16px 0; background: #f1f3f4; border-radius: 10px; padding: 3px; }
+  .audience-btn {
+    flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 600;
+    border: none; background: transparent; color: var(--text-secondary);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  }
+  .audience-btn.active { background: #fff; color: var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  .duration-tabs { display: flex; margin: 12px 16px 0; gap: 8px; }
+  .duration-tab {
+    flex: 1; padding: 10px 0; text-align: center; font-size: 13px; font-weight: 600;
+    border: none; background: transparent; color: var(--text-secondary);
+    border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+  }
+  .duration-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .content { padding: 16px; }
+
+  /* Flow strip */
+  .flow-strip { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+  .flow-tag-l { background: var(--blue-light); color: var(--blue); padding: 3px 7px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+  .flow-tag-s { background: var(--orange-light); color: var(--orange); padding: 3px 7px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+  .flow-arr { color: #999; font-weight: 700; }
+
+  /* ---- Script flow: one continuous block ---- */
+  .script-flow {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--card); overflow: hidden; margin-bottom: 16px;
+  }
+
+  /* locked section inside flow */
+  .flow-lock {
+    padding: 14px 16px; border-left: 3px solid var(--blue);
+    border-bottom: 1px solid var(--border);
+  }
+  .flow-lock:last-child { border-bottom: none; }
+  .flow-lock-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .flow-lock-body { font-size: 14px; color: var(--text); line-height: 1.75; white-space: pre-line; }
+  .hl { font-weight: 700; color: var(--blue-dark); }
+  .rd { color: var(--red); font-weight: 600; }
+
+  /* swap section inside flow — compact inline selector */
+  .flow-swap {
+    border-left: 3px solid var(--orange); border-bottom: 1px solid var(--border);
+  }
+  .flow-swap:last-child { border-bottom: none; }
+  .flow-swap-head {
+    padding: 12px 16px 4px; font-size: 10px; font-weight: 700; color: var(--orange); letter-spacing: 0.5px;
+  }
+  .flow-swap-title { padding: 0 16px 8px; font-size: 13px; font-weight: 700; color: var(--text); }
+
+  /* inline pain items */
+  .pain-inline { display: flex; flex-direction: column; }
+  .pain-row-item {
+    background: #fff; padding: 10px 16px; cursor: pointer; border-top: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+  .pain-row-item.selected { background: var(--blue-light); }
+  .pain-row-item:first-of-type { border-top: none; }
+  .pain-row-top { display: flex; align-items: center; gap: 10px; }
+  .pain-let {
+    font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%;
+    background: #e8eaed; color: var(--text-secondary); display: inline-flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pain-row-item.selected .pain-let { background: var(--blue); color: #fff; }
+  .pain-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .pain-sub { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+  .pain-script-inline {
+    display: none; font-size: 13px; color: var(--text); line-height: 1.7;
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    padding-left: 32px;
+  }
+  .pain-row-item.selected .pain-script-inline { display: block; }
+
+  /* Core points */
+  .core-points { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+  .core-point {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px; border-bottom: 1px solid #f1f3f4; font-size: 13px; line-height: 1.6;
+  }
+  .core-point:last-child { border-bottom: none; }
+  .core-num {
+    font-size: 12px; font-weight: 700; color: var(--blue); background: var(--blue-light);
+    width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .core-text strong { color: var(--text); }
+  .tag { font-size: 10px; color: var(--text-secondary); background: #f1f3f4; padding: 1px 6px; border-radius: 3px; margin-left: 4px; }
+
+  /* Tips */
+  .tips-card { background: var(--red-light); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; }
+  .tips-card.blue { background: var(--blue-light); }
+  .tips-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .tips-card .tips-title { color: var(--red); }
+  .tips-card.blue .tips-title { color: var(--blue); }
+  .tips-list { list-style: none; padding: 0; }
+  .tips-list li { font-size: 13px; color: var(--text); line-height: 1.7; padding: 4px 0; }
+
+  /* Q&A */
+  .qa-item { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden; }
+  .qa-q { padding: 14px 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .qa-q::after { content: ''; width: 8px; height: 8px; border-right: 2px solid var(--text-secondary); border-bottom: 2px solid var(--text-secondary); transform: rotate(45deg); transition: transform 0.2s; flex-shrink: 0; margin-left: 12px; }
+  .qa-item.open .qa-q::after { transform: rotate(-135deg); }
+  .qa-a { display: none; padding: 0 16px 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; border-top: 1px solid #f1f3f4; padding-top: 12px; }
+  .qa-item.open .qa-a { display: block; }
+
+  /* Guide */
+  .guide-section-title { font-size: 14px; font-weight: 700; margin: 20px 0 12px; color: var(--text); }
+  .guide-section-title:first-child { margin-top: 0; }
+  .flow-steps { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin: 12px 0; }
+  .flow-step { background: var(--blue); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
+  .mini-table th { background: #f1f3f4; padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 11px; }
+  .mini-table td { padding: 10px 12px; border-top: 1px solid #f1f3f4; line-height: 1.5; }
+
+  .hidden { display: none !important; }
+  .text-secondary { color: var(--text-secondary); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">达梦医疗行业销售工具包-1分钟 5分钟版</div>
+  <div class="header-sub">洞察先行 · 四步框架</div>
+</div>
+
+<div class="audience-toggle">
+  <button class="audience-btn active" data-audience="leader" onclick="switchAudience('leader')">院领导</button>
+  <button class="audience-btn" data-audience="it" onclick="switchAudience('it')">信息科</button>
+  <button class="audience-btn" data-audience="guide" onclick="switchAudience('guide')">指南</button>
+  <button class="audience-btn" data-audience="qa" onclick="switchAudience('qa')">Q&A</button>
+</div>
+
+<!-- ========== 院领导 ========== -->
+<div id="content-leader" class="content">
+
+  <div class="duration-tabs">
+    <button class="duration-tab active" onclick="switchDuration('leader','1min')">1 分钟</button>
+    <button class="duration-tab" onclick="switchDuration('leader','5min')">5 分钟</button>
+    <button class="duration-tab" onclick="switchDuration('leader','core')">核心观点</button>
+  </div>
+
+  <!-- 1分钟 -->
+  <div id="leader-1min">
+    <div class="flow-strip">
+      <span class="flow-tag-l">身份定位</span><span class="flow-arr">→</span>
+      <span class="flow-tag-s">痛点钩子</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">信创窗口</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">争取下一步</span>
+    </div>
+
+    <div class="script-flow">
+      <div class="flow-lock">
+        <div class="flow-lock-title">身份定位</div>
+        <div class="flow-lock-body">院长您好，我是达梦数据的[姓名]。一句话跟您汇报：我们正在帮全国上百家医院做的<span class="hl">不仅仅是数据库国产化替代，而是借信创这个窗口，帮医院建一个自主可控、能通能用的数据底座</span>。</div>
+      </div>
+      <div class="flow-swap">
+        <div class="flow-swap-head">可替换</div>
+        <div class="flow-swap-title">痛点钩子（约15秒，选一个）</div>
+        <div class="pain-inline">
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">A</span><div><span class="pain-name">医共体数据不通</span><span class="pain-sub">医共体牵头医院</span></div></div>
+            <div class="pain-script-inline">"当地一医院/人民医院和妇幼/中医院数据库不一样，医生调阅跨院区病历的时候要等待将近一分钟——根子在数据底座没统一。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">B</span><div><span class="pain-name">评级卡在数据质量</span><span class="pain-sub">正在冲击高等级评审</span></div></div>
+            <div class="pain-script-inline">"因为现在智慧医院从五级冲击六级、互联互通从四甲升五乙，很多医院功能模块都买齐了，最后都卡在同一个地方——数据不够全、不够准、不够通。根子在数据底座。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">C</span><div><span class="pain-name">数据上报压力大</span><span class="pain-sub">绩效考核/DRG上报困难</span></div></div>
+            <div class="pain-script-inline">"因为现在绩效考核、卫生统计、医保DRG/DIP数据上报，每次信息科都得从七八个系统里'搂数据'——不是没数据，是数据底座没拉通，拿不出来。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">D</span><div><span class="pain-name">科研/AI布局受阻</span><span class="pain-sub">有AI或科研规划</span></div></div>
+            <div class="pain-script-inline">"因为现在很多医院在规划医疗AI大模型、临床科研数据挖掘——但AI团队来了也做不了什么，因为数据分散在十几个系统里、格式不统一、'数据不可用'。根子在数据底座。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">E</span><div><span class="pain-name">通用版（保底）</span><span class="pain-sub">不明确时使用</span></div></div>
+            <div class="pain-script-inline">"因为现在医院每天面对绩效考核、等级评审、互联互通、医保上报——这些'必答题'答案都落在数据底座上。底座不扎实，上面的应用和报表都是沙子上盖楼。"</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">信创窗口锚</div>
+        <div class="flow-lock-body">2027年信创验收节点快到了——这不是"又多一个IT项目"，而是<span class="hl">医院终于有了政策窗口把数据底座统一升级</span>。</div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">争取下一步</div>
+        <div class="flow-lock-body">如果方便，我想找您汇报一下达梦在三甲医院核心系统替代上的一些实践，以及怎么帮医院把风险管住、把价值释放出来。<span class="rd">5分钟就好</span>。您看什么时候方便？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5分钟 -->
+  <div id="leader-5min" class="hidden">
+    <div class="flow-strip">
+      <span class="flow-tag-l">开场锚点</span><span class="flow-arr">→</span>
+      <span class="flow-tag-s">痛点展开</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">信创论证</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">风险可控</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">下一步</span>
+    </div>
+
+    <div class="script-flow">
+      <div class="flow-lock">
+        <div class="flow-lock-title">开场锚点</div>
+        <div class="flow-lock-body">院长您好，5分钟，我不推销产品。我想帮您理清楚一件事：<span class="hl">医院的数据底座问题要不要解决、什么时候解决、怎么解决风险最小。</span></div>
+      </div>
+      <div class="flow-swap">
+        <div class="flow-swap-head">可替换</div>
+        <div class="flow-swap-title">痛点共鸣展开（约1分钟，选一个场景深入）</div>
+        <div class="pain-inline">
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">A</span><div><span class="pain-name">医共体数据孤岛</span><span class="pain-sub">优先选用，院领导感知最强</span></div></div>
+            <div class="pain-script-inline">"我们在全国实践，看到一种普遍情况：医共体已经建成，但人民医院/一医院用Oracle+卫宁，妇幼用SQL Server+东软，中医院用MySQL+创业——底层数据库全不一样。检验检查结果互认信息科推半年推不通——不是信息科不努力，是底层不统一，靠应用层硬补。如果有朝一日想统一数据底座，这个工程早晚要做。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">B</span><div><span class="pain-name">评级天花板</span><span class="pain-sub">优先选用，直接关联医院排名</span></div></div>
+            <div class="pain-script-inline">"很多医院电子病历想从五级升六级、互联互通想从四甲升五乙，功能模块都买齐了，钱也花了不少。但最后都卡在同一个地方：数据不够全、不够准、不够通。为什么？因为底层数据库架构是十几年前一个个系统垒上来的，从来没统一规划过。评级天花板不是应用功能决定的，一是业务流程导致的缺少这块数据，二就是数据底座决定的。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">C</span><div><span class="pain-name">数据上报大会战</span><span class="pain-sub">被卫健委通报过数据问题时用</span></div></div>
+            <div class="pain-script-inline">"每个季度绩效考核55个指标数据上报，信息科要从HIS、电子病历、LIS、PACS、病案七八个系统里手工提取、清洗、对账，前后折腾两三周。卫生统计直报、医保结算清单上传——每一次都是'数据大会战'。这不是常态，这是隐患。如果有朝一日数据底座统一了，这些报表一键生成。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">D</span><div><span class="pain-name">AI/科研数据不可用</span><span class="pain-sub">有科研平台或AI项目时用</span></div></div>
+            <div class="pain-script-inline">"在不少已经建成数据集成平台的医院中，现状正在浮现：虽然表面上业务数据打通了，但真正要用于医疗AI大模型训练或临床科研数据挖掘时，AI团队往往来了也做不了什么。检验数据、影像报告、病理记录、电子病历等十几个异构系统中的数据，虽然能被集成平台拉到一起，却仍以'按业务系统原样存储'的方式散落在不同的数据池里。字段编码不一致、值域标准不统一、时间戳粒度不齐——治理这些数据要花费大量时间和人力，根子不在AI能力，而在数据底座本身。"</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">信创窗口论证</div>
+        <div class="flow-lock-body">这些事，没有信创政策，医院自己是不是早晚也要做？但问题在于——<span class="hl">没有政策窗口，这些事推不动</span>。没有政策压力，厂商不配合改接口；没有合规要求，预算不往基础软件上倾斜；没有时间节点，信息科想推也没抓手。
+
+现在，十五五规划、智慧医院新标准、信创2027——三股政策力量同时来了。<span class="rd">这不是又多一个负担，而是终于有了"尚方宝剑"把该办的事一次办了。</span>合规是顺带的，真正有价值的是：未来三到五年，医院有了一个能撑住所有业务、所有评级、所有创新的数字底座。</div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">风险可控论证</div>
+        <div class="flow-lock-body">院长您最关心的一定是：这事有没有风险？有，而且不能回避。但风险是可以管的。
+
+<strong>三个兜底：</strong>
+<strong>业务不停</strong>——核心系统高可用+双轨验证+可逆割接
+<strong>数据不错</strong>——全量校验+增量比对
+<strong>项目不失控</strong>——厂商协同+问题闭环
+
+厦门成功医院89个应用、31亿条数据跑了两年多，福州两大总医院10个院区、40多核心系统零中断——不是试点，是验证过的路径。</div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">下一步行动</div>
+        <div class="flow-lock-body">我的建议<span class="rd">不谈采购</span>。下一步：<span class="hl">联合评估会</span>——信息科 + 核心应用厂商 + 达梦一起，输出系统分级清单、依赖风险图、试点建议。清单出来，后面的方案和预算才有真正的讨论基础。
+
+这个评估不涉及采购决策，主要帮贵院把风险先看清。您看是否可以安排？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心观点 -->
+  <div id="leader-core" class="hidden">
+    <div class="text-secondary" style="margin-bottom:12px;">无论用哪个替换模块，以下四条必须在整体沟通中传递</div>
+    <div class="core-points">
+      <div class="core-point"><div class="core-num">1</div><div class="core-text"><strong>数据库不是信息科的技术组件，是医院所有管理和业务能力的底层心脏</strong><br><span class="tag">痛点共鸣部分</span></div></div>
+      <div class="core-point"><div class="core-num">2</div><div class="core-text"><strong>信创替代 ≠ 又多一个IT项目，信创 = 数据底座升级的最佳窗口</strong><br><span class="tag">窗口论证部分</span></div></div>
+      <div class="core-point"><div class="core-num">3</div><div class="core-text"><strong>先稳核心，再释放价值——风险可管，路径已验证</strong><br><span class="tag">风险论证部分</span></div></div>
+      <div class="core-point"><div class="core-num">4</div><div class="core-text"><strong>不谈采购，先做评估——把风险看清再决定</strong><br><span class="tag">下一步行动</span></div></div>
+    </div>
+
+    <div class="tips-card">
+      <div class="tips-title">院领导沟通五不建议</div>
+      <ul class="tips-list">
+        <li>不讲技术参数</li>
+        <li>不说"国产替代"——说"数据底座升级"</li>
+        <li>不推销产品——推销风险可控的升级路径</li>
+        <li>不谈价格——首次沟通只谈价值和风险</li>
+        <li>结尾必须争取下一步——联合评估会</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 信息科 ========== -->
+<div id="content-it" class="content hidden">
+
+  <div class="duration-tabs">
+    <button class="duration-tab active" onclick="switchDuration('it','1min')">1 分钟</button>
+    <button class="duration-tab" onclick="switchDuration('it','5min')">5 分钟</button>
+    <button class="duration-tab" onclick="switchDuration('it','core')">核心观点</button>
+  </div>
+
+  <!-- 1分钟 -->
+  <div id="it-1min">
+    <div class="flow-strip">
+      <span class="flow-tag-l">身份共情</span><span class="flow-arr">→</span>
+      <span class="flow-tag-s">具体痛点</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">价值锚点</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">争取下一步</span>
+    </div>
+
+    <div class="script-flow">
+      <div class="flow-lock">
+        <div class="flow-lock-title">身份 + 共情</div>
+        <div class="flow-lock-body">主任您好，我是达梦数据库的[姓名]。我知道信息科现在最头疼的不是数据库选型本身，而是——</div>
+      </div>
+      <div class="flow-swap">
+        <div class="flow-swap-head">可替换</div>
+        <div class="flow-swap-title">具体痛点（接上句直接说）</div>
+        <div class="pain-inline">
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">A</span><div><span class="pain-name">数据上报累</span><span class="pain-sub">每次都是大会战</span></div></div>
+            <div class="pain-script-inline">"每次绩效考核上报、互联互通数据准备，从十几个系统里'凑数据'——数据底座不过关，每次都是大会战。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">B</span><div><span class="pain-name">多厂商协调累</span><span class="pain-sub">夹在中间两头受气</span></div></div>
+            <div class="pain-script-inline">"系统出问题要协调五六家厂商，每家都说'不是我的问题'，信息科夹在中间两头受气。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">C</span><div><span class="pain-name">评级数据卡壳</span><span class="pain-sub">数据口径对不上</span></div></div>
+            <div class="pain-script-inline">"评级材料准备到一半发现数据口径对不上、质量不行——除了业务过程导致字段缺失，就是底层数据没拉通。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">D</span><div><span class="pain-name">信创压力来了</span><span class="pain-sub">不知道该怎么做</span></div></div>
+            <div class="pain-script-inline">"2027信创验收节点越来越近，但院领导觉得'又多一个活'，信息科知道该做但不知道怎么说服上面。"</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">价值锚点</div>
+        <div class="flow-lock-body">我们正在帮三甲医院做一件事：借信创政策窗口，把全院数据底座从根上拉通——<span class="hl">不是又给信息科加活，而是让信息科终于有'尚方宝剑'推统一底座</span>。达梦有完整工具链：提前扫描评估→异构双轨验证→可逆割接→上线后原厂值守。厦门89个应用跑了两年多。</div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">争取下一步</div>
+        <div class="flow-lock-body">方便的话找个时间，我跟您聊聊具体怎么落地？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5分钟 -->
+  <div id="it-5min" class="hidden">
+    <div class="flow-strip">
+      <span class="flow-tag-l">开场共情</span><span class="flow-arr">→</span>
+      <span class="flow-tag-s">痛点展开</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">政策窗口</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">风险管控</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">厂商协同</span><span class="flow-arr">→</span>
+      <span class="flow-tag-l">下一步</span>
+    </div>
+
+    <div class="script-flow">
+      <div class="flow-lock">
+        <div class="flow-lock-title">开场共情</div>
+        <div class="flow-lock-body">主任，5分钟，我不讲产品参数。我直接说信息科在数据库替代这件事上最担心什么——<span class="hl">上线以后出了问题，谁来兜底？系统卡了临床找信息科，接口报错厂商说"是数据库的问题"，夜间割接失败院领导问责。最后所有压力全落在信息科身上。</span>
+
+所以我要讲的，不是达梦数据库好不好用——而是一套<span class="hl">可落地、可回退、可运维</span>的风险控制路径。让信息科不是去赌，是去管。</div>
+      </div>
+      <div class="flow-swap">
+        <div class="flow-swap-head">可替换</div>
+        <div class="flow-swap-title">痛点展开（约1分钟，选一个深入讲）</div>
+        <div class="pain-inline">
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">A</span><div><span class="pain-name">数据上报型</span><span class="pain-sub">每月都要交"数据作业"</span></div></div>
+            <div class="pain-script-inline">"每次绩效考核55个指标上报，卫生统计直报，医保DRG结算清单上传——这些'作业'信息科每个月都要交。但数据来源分散在HIS、电子病历、LIS、PACS、病案、手麻、护理十几个系统里。数据库架构不统一，每次上报都是从各系统手工提取、清洗、对账。一个手术占比指标就要跨三个库关联。这不是信息科不努力——是底层数据库架构从一开始就不是为'全院统一数据底座'设计的。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">B</span><div><span class="pain-name">厂商协调型</span><span class="pain-sub">最累的不是技术本身</span></div></div>
+            <div class="pain-script-inline">"我猜主任最累的地方从来不是技术本身。系统慢了，HIS厂商说'是数据库的问题'，数据库说'是应用SQL写得差'——信息科夹在中间，两边催，两边都不买账。关键系统厂商有时候服务器和数据库绑在一起卖，你想换数据库他们就说'不支持'——不是不支持，是不愿意配合。"</div>
+          </div>
+          <div class="pain-row-item" onclick="sel(this)">
+            <div class="pain-row-top"><span class="pain-let">C</span><div><span class="pain-name">性能焦虑型</span><span class="pain-sub">担心扛不住、会变慢</span></div></div>
+            <div class="pain-script-inline">"国产数据库能不能扛住HIS高峰挂号并发？迁移以后会不会比原来慢？每次批处理会不会超时？这些担心非常合理。我要讲的就是达梦怎么处理这些——不是'我们有信心'，而是有工具、有方法、有数据来验证。"</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">政策窗口</div>
+        <div class="flow-lock-body">这些痛点，信息科早就想解决。但推不动——没政策依据推不动厂商，没预算推不动基础软件，没时间节点说服不了领导。现在十五五数智化、智慧医院2025新标准、信创2027验收——三股政策同时来了。<span class="rd">这不是给信息科又加一个活，而是信息科终于有了推统一数据底座的"尚方宝剑"。</span></div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">风险管控 · 五类风险拆开管</div>
+        <div class="flow-lock-body">
+兼容 → DMDTS自动扫描，不等割接当晚才爆雷
+性能 → 迁移前后基线比对，慢SQL能定位能优化
+数据 → 全量校验+增量比对，不是"导过去看看差不多"
+割接 → DMDRS异构双轨同步，窗口压到1-2小时，随时可回退
+运维 → DMDEM主动监控告警，不等临床投诉
+
+核心系统按<span class="hl">五步法</span>推进：评估→适配→双轨→割接→保障。每一步都有验证，每一步都可回退。信息科不是在赌——<span class="hl">是在用证据证明可以切</span>。</div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">厂商协同</div>
+        <div class="flow-lock-body">达梦的做法：从项目第一天起建立联合问题闭环。每张问题单有编号、责任方、处理人、截止时间、复测结果。所有厂商签字认领。达梦原厂不是坐在旁边看——主动参与兼容分析、性能调优、割接值守和问题复盘。
+
+我在每个项目里都会跟应用厂商当面说清楚：问题可以讨论，责任必须认领，期限必须遵守。<span class="rd">信息科不再独自催厂商。</span></div>
+      </div>
+      <div class="flow-lock">
+        <div class="flow-lock-title">下一步行动</div>
+        <div class="flow-lock-body"><span class="rd">不谈采购</span>。建议先做<span class="hl">联合评估会</span>——信息科 + 核心厂商 + 达梦，输出系统分级清单、依赖风险图、试点建议。清单出来，后面的方案和预算才有基础。您看？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心观点 -->
+  <div id="it-core" class="hidden">
+    <div class="text-secondary" style="margin-bottom:12px;">无论用哪个替换模块，以下五条必须在整体沟通中传递</div>
+    <div class="core-points">
+      <div class="core-point"><div class="core-num">1</div><div class="core-text"><strong>信息科最怕的不是替代本身，是上线后没人兜底</strong><br><span class="tag">开场共情</span></div></div>
+      <div class="core-point"><div class="core-num">2</div><div class="core-text"><strong>信创不是又加一个活，是信息科终于有了推统一底座的"尚方宝剑"</strong><br><span class="tag">政策窗口</span></div></div>
+      <div class="core-point"><div class="core-num">3</div><div class="core-text"><strong>五类风险拆开管 = 项目可管；每一步有验证 = 不是赌</strong><br><span class="tag">风险管控</span></div></div>
+      <div class="core-point"><div class="core-num">4</div><div class="core-text"><strong>达梦原厂进入问题闭环——信息科不再独自催厂商</strong><br><span class="tag">厂商协同</span></div></div>
+      <div class="core-point"><div class="core-num">5</div><div class="core-text"><strong>不谈采购，先做评估——清单出来再讨论</strong><br><span class="tag">下一步</span></div></div>
+    </div>
+
+    <div class="tips-card blue" style="margin-top:16px;">
+      <div class="tips-title">信息科沟通五个要点</div>
+      <ul class="tips-list">
+        <li>先共情，再方案——信息科不是怕替代，是怕没人兜底</li>
+        <li>工具链要讲"价值"不是"功能"——DMDTS的价值是不等割接当晚</li>
+        <li>厂商协同是核心痛点——信息科最累的不是技术</li>
+        <li>案例要能验证——说出医院名字、时间、数据量</li>
+        <li>DW守护集群适用：手麻/护理/病案用DW，OA/后勤可用单机</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 指南 ========== -->
+<div id="content-guide" class="content hidden">
+
+  <div class="guide-section-title">两个版本定位</div>
+  <table class="mini-table">
+    <tr><th></th><th>院领导版</th><th>信息科版</th></tr>
+    <tr><td style="font-weight:600;">受众</td><td>院长/副院长/CIO</td><td>信息科主任/技术骨干</td></tr>
+    <tr><td style="font-weight:600;">核心叙事</td><td>政策压力→数据底座→信创窗口→升级而非负担</td><td>上报压力→推不动→尚方宝剑→可管风险</td></tr>
+    <tr><td style="font-weight:600;">决策语言</td><td>管理后果、风险兜底、合规窗口</td><td>技术风险、工具链、协同机制</td></tr>
+    <tr><td style="font-weight:600;">切入角度</td><td>医院每天应对的"必答题"</td><td>信息科每月要交的"数据作业"</td></tr>
+    <tr><td style="font-weight:600;">反对应对</td><td>信创=额外负担→底座升级窗口</td><td>替代=没人兜底→可落地可回退</td></tr>
+  </table>
+
+  <div class="guide-section-title">标准销售流程</div>
+  <div class="flow-steps">
+    <span class="flow-step">1.信息科摸底</span><span class="flow-arr">→</span>
+    <span class="flow-step">2.院领导沟通</span><span class="flow-arr">→</span>
+    <span class="flow-step">3.联合评估会</span><span class="flow-arr">→</span>
+    <span class="flow-step">4.方案与预算</span>
+  </div>
+  <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+    <div><strong>第一步：</strong>信息科摸底 → 了解数据库现状、厂商分布、痛点</div>
+    <div><strong>第二步：</strong>院领导核心沟通 → 建立"数据底座"认知框架</div>
+    <div><strong>第三步：</strong>联合评估会 → 信息科+厂商+达梦，输出六大清单</div>
+    <div><strong>第四步：</strong>方案与预算 → 基于评估结果推动采购决策</div>
+  </div>
+
+  <div class="guide-section-title">洞察先行法 vs 传统SPIN</div>
+  <table class="mini-table">
+    <tr><th>维度</th><th>SPIN提问法</th><th style="color:var(--blue);">洞察先行法</th></tr>
+    <tr><td>发起方式</td><td>以问题开场</td><td style="color:var(--blue);">先陈述洞察，让客户感到"你懂我"</td></tr>
+    <tr><td>对话比例</td><td>提问为主</td><td style="color:var(--blue);">90%陈述 + 10%提问</td></tr>
+    <tr><td>决策者体验</td><td>"你在盘问我"</td><td style="color:var(--blue);">"你在帮我理清思路"</td></tr>
+    <tr><td>适用</td><td>信息科技术交流</td><td style="color:var(--blue);">院领导层决策沟通</td></tr>
+  </table>
+
+  <div class="guide-section-title">四步话术结构</div>
+  <div class="script-flow" style="margin-bottom:0;">
+    <div class="flow-lock" style="border-bottom:none;">
+      <div class="flow-lock-title">第一步 · 肯定院领导</div>
+      <div class="flow-lock-body">"您对医院的判断很准，数据底座确实是核心"</div>
+    </div>
+    <div class="flow-lock">
+      <div class="flow-lock-title">第二步 · 共鸣痛点</div>
+      <div class="flow-lock-body">"我在全国跑医院时看到的普遍情况..."</div>
+    </div>
+    <div class="flow-lock">
+      <div class="flow-lock-title">第三步 · 呈现方案</div>
+      <div class="flow-lock-body">"达梦的主张是：先稳核心，再释放价值"</div>
+    </div>
+    <div class="flow-lock" style="border-bottom:none;">
+      <div class="flow-lock-title">第四步 · 争取后续</div>
+      <div class="flow-lock-body">"不谈采购，先做一次联合评估，把风险看清"</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Q&A ========== -->
+<div id="content-qa" class="content hidden">
+  <div class="guide-section-title">常见问题速查</div>
+
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">国产数据库稳定吗？</div>
+    <div class="qa-a">厦门成功医院89个应用跑了两年多，福州两总医院40+核心系统零中断。可以联系验证。</div>
+  </div>
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">性能会不会下降？</div>
+    <div class="qa-a">迁移前后会做性能基线比对。达梦用共享存储集群(DSC)可以做到比原来更好的并发性能。</div>
+  </div>
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">厂商不愿配合怎么办？</div>
+    <div class="qa-a">我们有50+ISV深度适配经验。联合评估会就是让厂商坐下来，问题单签字认领，达梦进入闭环推进。</div>
+  </div>
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">预算不够怎么办？</div>
+    <div class="qa-a">先不谈预算。联合评估会输出清单后，系统分级替代——核心系统重点投入，一般系统成本可控。分步走。</div>
+  </div>
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">其他国产数据库也在推？</div>
+    <div class="qa-a">建议用五个问题比较：有三甲核心案例吗？有完整工具链吗？能协调ISV吗？有本地原厂吗？能支撑3-5年发展吗？一比就清楚。</div>
+  </div>
+  <div class="qa-item" onclick="this.classList.toggle('open')">
+    <div class="qa-q">DM8配置怎么选？</div>
+    <div class="qa-a">核心系统用DSC＋DW双集群；手麻/护理/病案等业务连续性要求高的→二级DW守护集群；OA/后勤等一般系统→企业版单机可适用。具体看系统分级清单。</div>
+  </div>
+</div>
+
+<script>
+  function switchAudience(a) {
+    document.querySelectorAll('.audience-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelector('[data-audience="'+a+'"]').classList.add('active');
+    document.querySelectorAll('[id^="content-"]').forEach(function(c){c.classList.add('hidden');});
+    document.getElementById('content-'+a).classList.remove('hidden');
+  }
+  function switchDuration(a, d) {
+    var c = document.getElementById('content-'+a);
+    c.querySelectorAll('.duration-tab').forEach(function(t){t.classList.remove('active');});
+    c.querySelectorAll('.duration-tab').forEach(function(t){
+      if (d==='1min' && t.textContent.indexOf('1')!==-1) t.classList.add('active');
+      if (d==='5min' && t.textContent.indexOf('5')!==-1) t.classList.add('active');
+      if (d==='core' && t.textContent.indexOf('核心')!==-1) t.classList.add('active');
+    });
+    ['1min','5min','core'].forEach(function(x){
+      var el = document.getElementById(a+'-'+x);
+      if (el) el.classList.toggle('hidden', x !== d);
+    });
+  }
+  function sel(el) {
+    var p = el.parentElement;
+    p.querySelectorAll('.pain-row-item').forEach(function(i){i.classList.remove('selected');});
+    el.classList.add('selected');
+  }
+</script>
+
+</body>
+</html>
