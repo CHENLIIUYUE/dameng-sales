@@ -1,10 +1,1091 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=销售工具包-移动端.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鍖荤枟琛屼笟閿€鍞伐鍏峰寘 路 涓€鍒嗛挓 浜斿垎閽熺増</title>
+<style>
+  :root {
+    --fixed-bg:    #E3F2FD;
+    --fixed-accent: #1976D2;
+    --pain-bg:      #fff0f0;
+    --pain-accent:  #d93025;
+    --next-bg:      #1976D2;
+    --next-text:     #ffffff;
+    --value-bg:     #E3F2FD;
+    --value-accent: #1976D2;
+    --card-shadow:   0 1px 4px rgba(0,0,0,0.08);
+    --bg: #ffffff; --card: #f7f8fa;
+    --text: #1a1a1a; --text-secondary: #5f6368;
+    --border: #e8eaed; --radius: 12px; --radius-sm: 8px;
+    --safe-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+    padding-bottom: calc(72px + var(--safe-bottom));
+  }
+
+  /* ===== Header ===== */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border); padding: 14px 20px 12px;
+  }
+  .header-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; line-height: 1.4; }
+  .header-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* ===== Tab bar ===== */
+  .audience-toggle { display: flex; margin: 16px 16px 0; background: #f1f3f4; border-radius: 10px; padding: 3px; overflow-x: auto; }
+  .audience-btn {
+    flex:1; min-width: 0; padding: 10px 4px; text-align: center; font-size: 13px; font-weight: 600;
+    border: none; background: transparent; color: var(--text-secondary);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .audience-btn.active { background: #fff; color: var(--fixed-accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  .duration-tabs { display: flex; margin: 12px 16px 0; gap: 8px; }
+  .duration-tab {
+    flex:1; padding: 10px 0; text-align: center; font-size: 13px; font-weight: 600;
+    border: none; background: transparent; color: var(--text-secondary);
+    border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+  }
+  .duration-tab.active { color: var(--fixed-accent); border-bottom-color: var(--fixed-accent); }
+
+  .content { padding: 16px; }
+
+  /* ===== Flow strip (step labels) ===== */
+  .flow-strip { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 11px; color: var(--text-secondary); margin-bottom: 14px; }
+  .ft-l { padding: 3px 7px; border-radius: 4px; font-weight: 600; font-size: 10px; }
+  .ft-s { padding: 3px 7px; border-radius: 4px; font-weight: 600; font-size: 10px; }
+  .ft-arr { color: #bbb; font-weight: 700; font-size: 12px; }
+
+  /* ===== Module card base ===== */
+  .mod-card {
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  /* ===== Fixed module (韬唤瀹氫綅/淇″垱绐楀彛/鎵挎帴/淇″垱璁鸿瘉/杈炬ⅵ浠峰€? ===== */
+  .m-fixed {
+    background: var(--fixed-bg);
+    border-left: 3px solid var(--fixed-accent);
+  }
+  .m-fixed .flow-lock-title { color: var(--fixed-accent); }
+
+  /* ===== Pain module (鐥涚偣鎻忚堪/鐥涚偣灞曞紑) ===== */
+  .m-pain {
+    background: var(--pain-bg);
+    border-left: 3px solid var(--pain-accent);
+  }
+  .m-pain .flow-lock-title { color: var(--pain-accent); }
+
+  /* ===== CTA module (浜夊彇涓嬩竴姝? ===== */
+  .m-next {
+    background: var(--next-bg);
+    border-left: 3px solid var(--next-bg);
+    color: var(--next-text);
+  }
+  .m-next .flow-lock-title { color: var(--next-text); }
+  .m-next .flow-lock-body { color: var(--next-text); }
+  .m-next .rd { color: #ffcccb; }
+
+  /* ===== Locked module block (inside card) ===== */
+  .flow-lock {
+    padding: 14px 16px;
+  }
+  .flow-lock-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .flow-lock-body { font-size: 14px; color: var(--text); line-height: 1.75; white-space: pre-line; }
+  .hl { font-weight: 700; }
+  .hl-ident  { color: var(--fixed-accent); }
+  .hl-pain   { color: var(--pain-accent); }
+  .hl-policy { color: var(--fixed-accent); }
+  .hl-next   { color: var(--fixed-accent); }
+  .rd { color: var(--pain-accent); font-weight: 600; }
+
+  /* ===== Replaceable section (flow-swap) ===== */
+  .flow-swap {
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-left: 3px solid var(--pain-accent);
+    background: #fff;
+  }
+  .flow-swap-title { padding: 12px 16px 8px; font-size: 13px; font-weight: 700; color: var(--text); }
+  .flow-swap > .flow-swap-title { color: var(--pain-accent); background: var(--pain-bg); }
+
+  /* ===== Pain inline selector ===== */
+  .pain-inline { display: flex; flex-direction: column; }
+  .pain-row-item {
+    background: var(--pain-bg); padding: 10px 16px; cursor: pointer;
+    border-top: 1px solid rgba(217,48,37,0.15);
+    transition: background 0.12s;
+  }
+  .pain-row-item.open { background: #ffe8e8; }
+  .pain-row-item:first-of-type { border-top: none; }
+  .pain-row-top { display: flex; align-items: center; gap: 10px; }
+  .pain-let {
+    font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%;
+    background: #e8eaed; color: var(--text-secondary); display: inline-flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pain-row-item.open .pain-let { background: var(--pain-accent); color: #fff; }
+  .pain-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .pain-sub { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+  .pain-script-inline {
+    display: none; font-size: 13px; color: var(--text); line-height: 1.7;
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    padding-left: 32px; white-space: pre-line;
+  }
+  .pain-row-item.open .pain-script-inline { display: block; }
+
+  /* ===== Collapsible anchor / value items ===== */
+  .an-item {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 8px; overflow: hidden;
+  }
+  .an-q {
+    padding: 14px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    user-select: none; gap: 12px;
+  }
+  .an-q-title { flex: 1; line-height: 1.4; }
+  .an-q::after {
+    content: ''; width: 8px; height: 8px; border-right: 2px solid var(--text-secondary); border-bottom: 2px solid var(--text-secondary);
+    transform: rotate(45deg); transition: transform 0.2s; flex-shrink: 0; margin-top: 4px;
+  }
+  .an-item.open .an-q::after { transform: rotate(-135deg); }
+  .an-a {
+    display: none; padding: 0 16px 14px; font-size: 13px; color: var(--text); line-height: 1.8;
+    border-top: 1px solid #f1f3f4; padding-top: 12px; white-space: pre-line;
+  }
+  .an-item.open .an-a { display: block; }
+
+  /* 閿氱偣鏍囩 鈥?缁熶竴娣辫摑锛屼笉鑺卞摠 */
+  .an-tag {
+    display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px;
+    margin-right: 6px; vertical-align: middle;
+    background: var(--fixed-bg); color: var(--fixed-accent);
+  }
+  .an-summary {
+    margin-top: 10px; padding: 10px 12px; background: var(--fixed-bg);
+    border-radius: 6px; font-weight: 600; font-size: 13px; color: var(--fixed-accent); line-height: 1.6;
+  }
+  .an-source { margin-top: 8px; font-size: 11px; color: var(--text-secondary); word-break: break-all; }
+
+  /* ===== Section guide ===== */
+  .section-guide {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.7;
+    background: #fff8e6; border-radius: var(--radius-sm);
+    padding: 12px 14px; margin-bottom: 12px;
+  }
+  .section-guide strong { color: #e37400; }
+
+  /* ===== 淇″垱璁鸿瘉/杈炬ⅵ浠峰€?鐙珛鍗＄墖瀹瑰櫒 ===== */
+  .anchor-cards { margin-bottom: 16px; }
+
+  /* ===== General ===== */
+  .hidden { display: none !important; }
+  .text-secondary { color: var(--text-secondary); font-size: 13px; }
+  .mb-12 { margin-bottom: 12px; }
+  .mb-16 { margin-bottom: 16px; }
+  .section-label {
+    font-size: 12px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px;
+    margin: 18px 0 10px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* 閿氱偣椤甸潰锛氬乏渚ф繁钃濈珫绾?+ 鍦嗚鍗＄墖 */
+  .anchor-page .an-item {
+    border-left: 3px solid var(--fixed-accent);
+    border-radius: var(--radius-sm);
+  }
+  .anchor-page .an-q-title { font-size: 13px; }
+
+  /* 浜斿垎閽熼儴鍒嗭細淇″垱閿氱偣/杈炬ⅵ浠峰€煎崱鐗囨牱寮忥紙涓庤韩浠藉畾浣嶆ā鍧椾竴鑷达級 */
+  #leader-5min .anchor-cards .an-item {
+    background: var(--fixed-bg);
+    border: none;
+    border-left: 3px solid var(--fixed-accent);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+  }
+  #leader-5min .anchor-cards .an-item .an-q-title {
+    color: var(--fixed-accent);
+  }
+  #leader-5min .anchor-cards .an-item .an-a {
+    border-top-color: rgba(25,118,210, 0.15);
+  }
+  #leader-5min .anchor-cards .an-item .an-tag {
+    background: rgba(25,118,210, 0.12);
+    color: var(--fixed-accent);
+  }
+  /* 淇″垱閿氱偣/杈炬ⅵ浠峰€?鈥斺€?涓庣棝鐐瑰睍寮€涓€妯′竴鏍风殑琛屾牱寮忥紙钃濊壊涓婚锛?*/
+  .anchor-inline { display: flex; flex-direction: column; }
+  .anchor-row-item {
+    background: var(--fixed-bg); padding: 10px 16px; cursor: pointer;
+    border-top: 1px solid rgba(25,118,210,0.15);
+    transition: background 0.12s;
+  }
+  .anchor-row-item:first-of-type { border-top: none; }
+  .anchor-row-top { display: flex; align-items: center; gap: 10px; }
+  .anchor-let {
+    font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%;
+    background: #e8eaed; color: var(--text-secondary); display: inline-flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .anchor-row-item.open .anchor-let { background: var(--fixed-accent); color: #fff; }
+  .anchor-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .anchor-sub { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+  .anchor-script-inline {
+    display: none; font-size: 13px; color: var(--text); line-height: 1.7;
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    padding-left: 32px; white-space: pre-line;
+  }
+  .anchor-row-item.open .anchor-script-inline { display: block; }
+
+  /* 浜斿垎閽熼儴鍒嗭細淇″垱璁鸿瘉/杈炬ⅵ浠峰€?鍗＄墖澶栧３锛堝彲鏇挎崲鏍峰紡锛岃摑鑹蹭富棰橈級 */
+  #leader-5min .anchor-card {
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-left: 3px solid var(--fixed-accent);
+    background: #fff;
+  }
+  #leader-5min .anchor-card .flow-swap-title {
+    color: var(--fixed-accent);
+    background: var(--fixed-bg);
+    padding: 12px 16px 8px;
+  }
+
+  /* ===== 淇℃伅绉戦儴鍒嗘牱寮?===== */
+  #it-5min .anchor-card {
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-left: 3px solid var(--fixed-accent);
+    background: #fff;
+  }
+  #it-5min .anchor-card .flow-swap-title {
+    color: var(--fixed-accent);
+    background: var(--fixed-bg);
+    padding: 12px 16px 8px;
+  }
+  #it-5min .anchor-inline { display: flex; flex-direction: column; }
+  #it-5min .anchor-row-item {
+    background: var(--fixed-bg); padding: 10px 16px; cursor: pointer;
+    border-top: 1px solid rgba(25,118,210,0.15);
+    transition: background 0.12s;
+  }
+  #it-5min .anchor-row-item:first-of-type { border-top: none; }
+  #it-5min .anchor-row-item.open .anchor-let { background: var(--fixed-accent); color: #fff; }
+  #it-5min .anchor-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  #it-5min .anchor-sub { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+  #it-5min .anchor-script-inline {
+    display: none; font-size: 13px; color: var(--text); line-height: 1.7;
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    padding-left: 32px; white-space: pre-line;
+  }
+  #it-5min .anchor-row-item.open .anchor-script-inline { display: block; }
+  #it-5min .anchor-cards .an-item {
+    background: var(--fixed-bg);
+    border: none;
+    border-left: 3px solid var(--fixed-accent);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 12px;
+  }
+  #it-5min .anchor-cards .an-item .an-q-title { color: var(--fixed-accent); }
+  #it-5min .anchor-cards .an-item .an-a { border-top-color: rgba(25,118,210, 0.15); }
+  #it-5min .anchor-cards .an-item .an-tag { background: rgba(25,118,210, 0.12); color: var(--fixed-accent); }
+</style>
 </head>
 <body>
-<p>正在跳转...</p>
+
+<!-- ========== Header ========== -->
+<div class="header">
+  <div class="header-title">鍖荤枟琛屼笟閿€鍞伐鍏峰寘</div>
+  <div class="header-sub">涓€鍒嗛挓 路 浜斿垎閽熺増</div>
+</div>
+
+<div class="audience-toggle">
+  <button class="audience-btn" data-audience="leader" onclick="switchAudience('leader')">闄㈤瀵?/button>
+  <button class="audience-btn active" data-audience="it" onclick="switchAudience('it')">淇℃伅绉?/button>
+  <button class="audience-btn" data-audience="anchors" onclick="switchAudience('anchors')">鏀跨瓥姹囨€?/button>
+  <button class="audience-btn" data-audience="faq" onclick="switchAudience('faq')">甯歌闂</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- ========== 闄㈤瀵?========== -->
+<!-- ============================================================ -->
+<div id="content-leader" class="content hidden">
+
+  <div class="duration-tabs">
+    <button class="duration-tab active" onclick="switchDuration('leader','1min')">1 鍒嗛挓</button>
+    <button class="duration-tab" onclick="switchDuration('leader','5min')">5 鍒嗛挓</button>
+  </div>
+
+  <!-- ========== 1鍒嗛挓 ========== -->
+  <div id="leader-1min">
+
+    <div class="flow-strip">
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">韬唤瀹氫綅</span><span class="ft-arr">鈫?/span>
+      <span class="ft-s" style="background:var(--pain-bg);color:var(--pain-accent);">鐥涚偣鎻忚堪</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">淇″垱绐楀彛</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--next-bg);color:var(--next-text);">浜夊彇涓嬩竴姝?/span>
+    </div>
+
+    <!-- 韬唤瀹氫綅銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">韬唤瀹氫綅</div>
+        <div class="flow-lock-body">闄㈤暱鎮ㄥソ锛屾垜鏄揪姊︽暟鎹殑[濮撳悕]銆備竴鍙ヨ瘽鍚戞偍姹囨姤锛氭垜浠凡缁忓府<span class="hl hl-ident">鍏ㄥ浗涓婄櫨瀹?/span>鍖婚櫌鍋氫簡<span class="hl hl-ident">鏁版嵁搴撳浗浜у寲鏇夸唬</span>锛屽叾涓ぇ澶氭暟涓夌敳鍖婚櫌閮藉疄鐜颁簡<span class="hl hl-ident">鏁版嵁搴曞骇灞傜殑淇″垱鏀归€?/span>銆傛垜浠簡瑙ｅ埌璐甸櫌锛?/div>
+      </div>
+    </div>
+
+    <!-- 鐥涚偣鎻忚堪銆愬彲鏇挎崲銆戝崱鐗?-->
+    <div class="flow-swap">
+            <div class="flow-swap-title">鐥涚偣鎻忚堪</div>
+      <div class="pain-inline">
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓€</span><div><span class="pain-name">閫氱敤鐗?/span><span class="pain-sub">涓嶆槑纭椂浣跨敤</span></div></div>
+          <div class="pain-script-inline">姣忓ぉ闈㈠缁╂晥鑰冩牳銆佺瓑绾ц瘎瀹°€佷簰鑱斾簰閫氥€佸尰淇濈粨绠楃瓑绛夊拰鏁版嵁涓婃姤鍙婁簰閫氭湁鍏崇殑宸ヤ綔锛屼笉绠℃槸淇℃伅绉戣繕鏄笟鍔＄瀹ら兘鑺辫垂浜嗗緢澶?span class="hl hl-pain">绮惧姏鍦ㄦ暟鎹殑鎶撳彇鍜屼笂鎶ヤ腑</span>锛屽綊鏍圭粨搴曟槸<span class="hl hl-pain">鏁版嵁灞傚氨娌℃湁鍋氬埌缁熶竴</span>銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">浜?/span><div><span class="pain-name">璇勭骇鏀诲潥 / 鏁版嵁璐ㄩ噺</span><span class="pain-sub">姝ｅ湪鍐插嚮楂樼瓑绾ц瘎瀹?/span></div></div>
+          <div class="pain-script-inline">鏅烘収鍖荤枟锛堝師鐢靛瓙鐥呭巻璇勭骇锛変粠浜旂骇鍐插嚮鍏骇銆佷簰鑱斾簰閫氫粠鍥涚敳鍗囦簲涔欙紝鍔熻兘妯″潡閮戒笂榻愪簡锛屽伐鍏蜂篃閲囪喘鐨勪笉灏戯紝鏈€鍚庤繕鏄崱鍦ㄦ暟鎹川閲忎笂锛屽湪鎶撳彇鍜屾暣鐞嗚繃绋嬩腑鍑虹幇鍚勭鍥伴毦锛屾暟鎹畬鏁存€с€佽鑼冩€с€佷竴鑷存€с€佹椂鏁堟€с€佹暣鍚堟€у緱涓嶅埌淇濋殰銆傚綊鏍圭粨搴曟槸<span class="hl hl-pain">鏁版嵁灞傚氨娌℃湁鍋氬埌缁熶竴</span>銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓?/span><div><span class="pain-name">缁╂晥鑰冩牳 / 鏁版嵁涓婃姤</span><span class="pain-sub">鏁版嵁涓婃姤鍘嬪姏澶?/span></div></div>
+          <div class="pain-script-inline">鐜板湪缁╂晥鑰冩牳銆佸崼鐢熺粺璁°€佸尰淇滵RG/DIP鏁版嵁涓婃姤锛屼俊鎭甯稿父闇€瑕佷粠濂藉嚑涓郴缁熼噷'鎼傛暟鎹?锛屼笉鏄病鏁版嵁鏄?span class="hl hl-pain">鏁版嵁灞傛病鎷夐€?/span>锛屾嬁涓嶅嚭鏉ャ€?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">鍥?/span><div><span class="pain-name">鍖诲叡浣?/ 鍖哄煙鍗忓悓</span><span class="pain-sub">鍖诲叡浣撶壍澶村崟浣?/span></div></div>
+          <div class="pain-script-inline">浣滀负鍜变滑XX鍖哄煙鍖诲叡浣撶壍澶村崟浣嶏紝鐩墠浣跨敤<span class="hl hl-pain">缁熶竴鏂扮郴缁熼檮甯﹁祫婧愭氮璐?/span>锛堟浛鎹㈡柊绯荤粺鍚庡崟涓€杞欢鍘傚闅句互婊¤冻鍚勪笓绉戦渶姹傦紝鑻ユ柊绯荤粺涓嶅吋瀹癸紝灏嗗舰鎴愭暟鎹鍨掞紝褰卞搷鏁版嵁鏁村悎鍏变韩鍙婂尰鐤楁湇鍔℃晥鐜囷級銆?span class="hl hl-pain">鍖哄煙鍖荤枟鏁版嵁璧勬簮缁熺闅惧害澶?/span>锛堝悇鍘垮煙鍦ㄦ暟瀛楀尰鍏变綋寤鸿涓?鍚勮嚜涓烘斂"锛屾暟鎹暣鍚堝崗鍚屽洶闅撅紝涓嶅埄浜庡垎绾ц瘖鐤楋紱鍘垮煙闂存帴鍙ｆ敼閫犳垚鏈珮銆佸懆鏈熼暱锛屽鏉傛暟鎹鐢靛瓙鐥呭巻銆佸尰瀛﹀奖鍍忛毦浠ヨ縼绉伙級銆?span class="hl hl-pain">"鍖婚槻鎶€"鍘嗗彶鏁版嵁鏁村悎闅?/span>锛堝骞存矇娣€鐨勫巻鍙叉暟鎹笌褰撳墠鍖荤枟浜掕銆佸仴搴锋。妗堢鐞嗙瓑宸ヤ綔鑴辫妭锛屽埗绾︽暟鎹环鍊兼寲鎺橈級銆?/div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 淇″垱绐楀彛銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">淇″垱绐楀彛</div>
+        <div class="flow-lock-body">2027骞翠俊鍒涢獙鏀惰妭鐐硅繎鍦ㄥ挮灏猴紝杩欎釜鏀跨瓥绐楀彛璁╁尰闄㈡湁浜嗘妸鏁版嵁搴曞骇缁熶竴鍗囩骇鐨勫鏈恒€?/div>
+      </div>
+    </div>
+
+    <!-- 浜夊彇涓嬩竴姝ャ€愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-next">
+      <div class="flow-lock">
+        <div class="flow-lock-title">浜夊彇涓嬩竴姝?/div>
+        <div class="flow-lock-body">濡傛灉鍙互锛屾垜鎯崇粰鎮ㄦ眹鎶ヤ竴涓嬭揪姊﹀湪涓庤吹闄綋閲忕浉浼肩殑鍖婚櫌鏍稿績绯荤粺淇″垱鏇夸唬涓婄殑涓€浜涘疄璺电粡楠岋紝鍖呮嫭鎬庝箞甯尰闄㈡妸椋庨櫓绠′綇銆侀€氳繃鏁版嵁搴曞骇鍗囩骇甯姪涓氬姟灞傛妸鏁版嵁浠峰€奸噴鏀惧嚭鏉ャ€傚ぇ姒傚嚑鍒嗛挓銆?span class="rd">鎮ㄧ幇鍦ㄦ柟渚垮悧锛?/span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== 5鍒嗛挓 ========== -->
+  <div id="leader-5min" class="hidden">
+
+    <div class="flow-strip">
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">鎵挎帴涓€鍒嗛挓</span><span class="ft-arr">鈫?/span>
+      <span class="ft-s" style="background:var(--pain-bg);color:var(--pain-accent);">鐥涚偣灞曞紑</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">淇″垱璁鸿瘉</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">杈炬ⅵ浠峰€?/span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--next-bg);color:var(--next-text);">浜夊彇涓嬩竴姝?/span>
+    </div>
+
+    <!-- 鎵挎帴涓€鍒嗛挓銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">鎵挎帴涓€鍒嗛挓</div>
+        <div class="flow-lock-body">鎰熻阿闄㈤暱缁欐垜杩欏嚑鍒嗛挓銆傛垜鎯充粠涓変釜瑙掑害鍚戞偍姹囨姤锛?span class="hl hl-policy">鏁版嵁闂鐨勬牴婧愬湪鍝噷銆佷俊鍒涙斂绛栫獥鍙ｆ剰鍛崇潃浠€涔堛€佷互鍙婃垜浠湪鍚岀被鍖婚櫌鐨勫疄璺佃矾寰?/span>銆?/div>
+      </div>
+    </div>
+
+    <!-- 鐥涚偣灞曞紑銆愬彲鏇挎崲銆戝崱鐗?-->
+    <div class="flow-swap">
+            <div class="flow-swap-title">鐥涚偣灞曞紑</div>
+      <div class="pain-inline">
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓€</span><div><span class="pain-name">璇勭骇鏀诲潥 / 鏁版嵁璐ㄩ噺鏂瑰悜</span><span class="pain-sub">鍐插嚮楂樼瓑绾ц瘎瀹＄殑鍖婚櫌棣栭€?/span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>鎴戜滑鍦ㄦ湇鍔′笁鐢插尰闄㈢殑杩囩▼涓彂鐜帮細璇勭骇鍐插叧鍗″湪鏁版嵁璐ㄩ噺锛岃〃闈笂鏄暟鎹不鐞嗙殑闂锛屾湰璐ㄦ槸鏁版嵁搴撳眰闈㈢殑澶氭簮寮傛瀯銆?
+
+璐甸櫌鐩墠鐨凥IS銆丒MR銆丩IS銆丳ACS绛夋牳蹇冪郴缁燂紝澶ф鐜囨槸涓嶅悓鍘傚晢鍦ㄤ笉鍚屽勾浠ｉ儴缃茬殑锛屽簳灞傛暟鎹簱鍙兘鍖呭惈Oracle銆丼QL Server銆丮ySQL绛夊绉嶆暟鎹簱銆傚悇绯荤粺鏁版嵁鏍煎紡涓嶄竴鑷达紝鍦ㄥ仛浜掕仈浜掗€氭祴璇勬垨鏅烘収鍖荤枟锛堝師鐢靛瓙鐥呭巻锛夎瘎绾ф椂锛屾暟鎹槧灏勩€佹竻娲椼€佸榻愮殑宸ヤ綔閲忛泦涓噴鏀惧埌浜哄伐灞傞潰銆?
+
+<strong>涓撳鍘熻瘽浣愯瘉1锛堝弬鑰冿級锛?/strong>澶嶆棪澶у闄勫睘鍗庡北鍖婚櫌澶ф暟鎹腑蹇冧富浠婚粍铏瑰湪CHIMA 2026澶т細涓婃彁鍑猴紝鏁版櫤搴旂敤瀵规暟鎹川閲忔彁鍑轰簡涓夊ぇ瑕佹眰锛氭爣鍑嗗寲锛堢粺涓€鏁版嵁瑙勮寖锛夈€佸叏闈㈡€э紙瑕嗙洊鍏ㄤ笟鍔″満鏅級銆侀珮濉厖鐜囷紙鍑忓皯鏁版嵁缂哄け锛夈€備粬鎸囧嚭锛屽綋鍓嶅尰闄㈤渶瑕佷粠"浠ユā鍨嬩负涓績"杞悜"浠ユ暟鎹负涓績"锛屼緷鎵樺ぇ瑙勬ā鏁版嵁闆嗘彁鍗囧簲鐢ㄨ兘鍔涖€?
+
+鏉ユ簮锛欳HIMA 2026澶т細涓撻鎶ラ亾 <a href="https://www.chima.org.cn/Html/News/Articles/17425.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chima.org.cn/Html/News/Articles/17425.html</a>
+
+<strong>涓撳鍘熻瘽浣愯瘉2锛堝弬鑰冿級锛?/strong>鍏板窞澶у绗竴鍖婚櫌淇℃伅涓績涓讳换鐜嬪缓鏋楁寚鍑猴細"鍦ㄥ紑灞曚汉宸ユ櫤鑳界殑鐮旂┒涓紝鍥犱负浼氬嚭鐜板够瑙夛紝閲嶆柊鎬濊€冨簳灞傛暟鎹殑璐ㄩ噺闂鈥︹€︽渶涓昏杩樻槸鍚勭'鏈夌敤'鏁版嵁鐨勯噰闆嗘眹鑱氾紝鍊掗€煎仛濂戒簰鑱斾簰閫氱殑鍩虹宸ヤ綔銆?浠栧悓鏃跺己璋冿紝"鍚勫尰闄㈠湪杩涜淇℃伅鍖栧缓璁剧殑杩囩▼涓紝鏍稿績杩樻槸瑙ｅ喅浜掕仈浜掗€氱殑闂銆?
+
+鏉ユ簮锛欳HIMA涓撳瑙傜偣鏍忕洰锛?025骞?鏈?<a href="https://www.chima.org.cn/Html/News/Articles/17516.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chima.org.cn/Html/News/Articles/17516.html</a>
+
+<span class="hl hl-pain">鏍稿績瑙傜偣锛氭暟鎹不鐞嗙殑涓婇檺鐢卞簳灞傛灦鏋勫喅瀹氥€?/span> 鍦ㄥ鏁版嵁搴撳苟瀛樼殑鏋舵瀯涓婂仛鏁版嵁鏍囧噯鍖栵紝鎶曞叆浜у嚭姣旈€掑噺锛涚粺涓€鏁版嵁搴撳簳搴у悗锛屾暟鎹不鐞嗙殑鏁堢巼鍛堢粨鏋勬€ф敼鍠勩€?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">浜?/span><div><span class="pain-name">缁╂晥鑰冩牳 / 鏁版嵁涓婃姤鏂瑰悜</span><span class="pain-sub">琚崼鍋ュ閫氭姤杩囨暟鎹棶棰樻椂鐢?/span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>2025骞翠互鏉ワ紝鍥藉瀵瑰叕绔嬪尰闄㈢哗鏁堣€冩牳鐨勬暟鎹笂鎶ヨ姹傝繘涓€姝ョ粏鍖栥€傚浗瀹跺崼鍋ュ浜?025骞?鏈堝彂甯冦€婂浗瀹朵笁绾у叕绔嬪尰闄㈢哗鏁堢洃娴嬫搷浣滄墜鍐岋紙2025鐗堬級銆嬶紝瀵?024骞寸増鑰冩牳浣撶郴杩涜浜嗚皟鏁淬€?
+
+DRG/DIP鏀粯鏀归潻鐨勬繁鍖栦娇鍖讳繚鏁版嵁鏍告煡棰戞鎻愬崌銆傚浗瀹跺尰淇濆眬2025骞?鏈堝簳鍙戝竷銆婃寜鐥呯浠樿垂鍖荤枟淇濋殰缁忓姙绠＄悊瑙勭▼锛?025鐗堬級銆嬶紝寮鸿皟鎸夌梾绉嶄粯璐圭殑鏁版嵁瑙勮寖涓庡叏娴佺▼鍙拷婧€с€?
+
+褰撴暟鎹簱鏄涓紓鏋勭郴缁熸椂锛屼俊鎭闇€瑕佸湪姣忔涓婃姤绐楀彛鏈熻繘琛屾暟鎹娊鍙栥€佹瘮瀵广€佷慨姝ｏ紝杩欐槸缁撴瀯鎬ф垚鏈紝鑰岄潪鎿嶄綔鏁堢巼闂銆傝В鍐宠矾寰勫彧鏈変竴涓細缁熶竴鏁版嵁搴曞骇锛屽湪鏁版嵁鍏ュ簱闃舵灏变繚璇佽鑼冦€?
+
+鍘熸枃锛氥€婂浗瀹朵笁绾у叕绔嬪尰闄㈢哗鏁堢洃娴嬫搷浣滄墜鍐岋紙2025鐗堬級銆?<a href="https://www.nhc.gov.cn/yzygj/c100068/202506/6a97e937c58b413d8a0ffdcc23d325d4/files/xxx.pdf" target="_blank" style="color:inherit;text-decoration:underline;">https://www.nhc.gov.cn/yzygj/c100068/202506/6a97e937c58b413d8a0ffdcc23d325d4/files/xxx.pdf</a>
+
+鍘熸枃锛氥€婃寜鐥呯浠樿垂鍖荤枟淇濋殰缁忓姙绠＄悊瑙勭▼锛?025鐗堬級銆?<a href="https://www.nhsa.gov.cn/art/2025/1/27/art_104_15589.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.nhsa.gov.cn/art/2025/1/27/art_104_15589.html</a>
+
+<strong>涓撳鍘熻瘽浣愯瘉1锛堝弬鑰冿級锛?/strong>澶嶆棪澶у闄勫睘鍗庡北鍖婚櫌澶ф暟鎹腑蹇冧富浠婚粍铏瑰湪CHIMA 2026澶т細涓婃槑纭彁鍑猴細"绠＄悊鏁版嵁蹇呴』缁熶竴锛屽簲鐢ㄧ郴缁熷彲浠ヤ繚鐣欏樊寮傘€傞€氳繃鏋勫缓缁熶竴鏁版嵁搴曞骇鍜岄泦鎴愬钩鍙帮紝瀹炵幇'鏍稿績缁熶竴銆侀潪鏍稿績宸紓鍖?锛岃繖鏄尰闄㈤珮璐ㄩ噺鍙戝睍鐨勫叧閿€?
+
+鏉ユ簮锛?a href="https://www.chima.org.cn/Html/News/Articles/17856.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chima.org.cn/Html/News/Articles/17856.html</a>
+
+<strong>涓撳鍘熻瘽浣愯瘉2锛堝弬鑰冿級锛?/strong>閲嶅簡鍖荤澶у闄勫睘绗竴鍖婚櫌淇℃伅涓績涓讳换绉︽兜涔﹀湪CHIMA鍙戞枃鎸囧嚭锛屽尰闄俊鎭郴缁熻涓嶆柇婊¤冻鍏珛鍖婚櫌缁╂晥鐩戞祴銆佷笁绾у尰闄㈣瘎瀹°€丏RG銆佸垎绾ц瘖鐤楃瓑鏀跨瓥鍙樺寲锛?鍔熻兘涓嶆柇澧炲姞銆佹祦绋嬫棩鐩婂鏉?锛屼俊鎭洟闃熼潰瀵逛笉鍚屽巶鍟嗕笉鍚岀郴缁燂紝"闇€鎶曞叆澶ч噺浜哄姏鍜屾椂闂磋В鍐虫帴鍙ｃ€佸姛鑳藉崌绾с€佹晠闅滃鐞嗙瓑闂"銆?
+
+鏉ユ簮锛?a href="https://chima.org.cn/Html/News/Articles/17520.html" target="_blank" style="color:inherit;text-decoration:underline;">https://chima.org.cn/Html/News/Articles/17520.html</a>
+
+<span class="hl hl-pain">鏍稿績瑙傜偣锛氱哗鏁堣€冩牳鍜屽尰淇濇敮浠樼殑鏁版嵁棰楃矑搴﹁姹傛寔缁粏鍖栥€?/span> 鏁版嵁搴曞骇涓嶇粺涓€锛屾瘡娆′笂鎶ラ兘鏄竴娆′汉宸ユ不鐞嗗伐绋嬶紱搴曞骇缁熶竴鍚庯紝涓婃姤鎴愪负鑷姩鍖栫殑甯歌娴佺▼銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓?/span><div><span class="pain-name">鍖诲叡浣?/ 鍖哄煙鍗忓悓鏂瑰悜</span><span class="pain-sub">鍖诲叡浣撶壍澶村崟浣嶉閫?/span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>2025骞?鏈?2鏃ワ紝鍥藉鍗仴濮旇仈鍚堝閮ㄩ棬鍙戝竷銆婄揣瀵嗗瀷鍘垮煙鍖诲叡浣撲俊鎭寲鍔熻兘鎸囧紩銆嬶紝棣栨鏄庣‘鎻愬嚭鍘垮煙鍖诲叡浣撲俊鎭寲寤鸿闇€鍏ㄩ潰閬靛惊淇″垱鏍囧噯鈥斺€旂‖浠惰鏂借澶囦笌鍩虹杞欢搴斿綋绗﹀悎淇″垱瑕佹眰锛屽簲鐢ㄨ蒋浠朵骇鍝佺鍚堜俊鍒涘拰杞欢姝ｇ増鍖栧伐浣滆姹傘€備粖骞翠篃鍙戝竷浜嗐€婄揣瀵嗗瀷鍘垮煙鍖诲叡浣撳尰瀛﹀奖鍍忎腑蹇冨缓璁句笌鏈嶅姟鎸囧崡锛堣瘯琛岋級绛?椤规寚鍗椼€嬭缁嗘弿杩颁簡鍏充簬鍖哄煙鏁版嵁闆嗕腑绠＄悊鐨勮姹傘€?
+
+鍖诲叡浣撶壍澶村崟浣嶉潰涓寸殑鐜板疄鏄細鍒嗛櫌浣跨敤鐨勭郴缁熶笌鎬婚櫌涓嶅悓锛屾暟鎹簱鐗堟湰涓嶄竴锛屽巻鍙叉暟鎹縼绉绘垚鏈珮銆傚綋鍖哄煙鍗忓悓璋冨害銆佸弻鍚戣浆璇娿€佹參鐥呯鐞嗛渶瑕佹媺閫氭暟鎹椂锛岀摱棰堝湪搴曞眰鏁版嵁搴撶殑浜掓搷浣滄€с€?
+
+鏉ユ簮锛氬浗瀹跺崼鍋ュ瑙勫垝鍙戝睍涓庝俊鎭寲鍙搞€婂叧浜庡嵃鍙戠揣瀵嗗瀷鍘垮煙鍖诲叡浣撲俊鎭寲鍔熻兘鎸囧紩鐨勯€氱煡銆嬫斂绛栬В璇?2025骞?鏈?2鏃?<a href="https://www.nhc.gov.cn/guihuaxxs/c100133/202503/a44fd482a5f140d19b9e595e2fc583f0.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.nhc.gov.cn/guihuaxxs/c100133/202503/a44fd482a5f140d19b9e595e2fc583f0.shtml</a>
+
+<strong>琛屼笟妗堜緥鏁版嵁锛堝弬鑰冿級锛?/strong>
+路 缁╂邯鍘垮煙鍖诲叡浣擄紙2025骞?0鏈堬級锛氳鐩栧幙鍖婚櫌銆佷腑鍖婚櫌鍙?1瀹朵埂闀囧崼鐢熼櫌
+路 鎴愰兘鍏ㄦ皯鍋ュ悍淇℃伅骞冲彴锛?025骞?鏈堬級锛氳鐩?3涓尯鍘裤€佽秴1500瀹跺尰鐤楁満鏋勩€?7涓笟鍔″満鏅?
+
+杩欎簺鍖哄煙骞冲彴鐨勫叡鍚岀壒寰佹槸锛氫互鍥戒骇鏁版嵁搴撲负搴曞骇锛屽疄鐜颁簡璺ㄦ満鏋勬暟鎹殑缁熶竴鎺ュ叆涓庣鐞嗐€?
+
+鏉ユ簮锛欻IT涓撳缃?<a href="https://www.hit180.com/77314.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.hit180.com/77314.html</a>
+
+<span class="hl hl-pain">鏍稿績瑙傜偣锛氬尯鍩熷尰鐤楀崗鍚岀殑鍓嶆彁鏄暟鎹簳搴х殑缁熶竴銆?/span> 鍖诲叡浣撳缓璁惧凡灏嗕俊鍒涙爣鍑嗗啓鍏ュ姛鑳芥寚寮曪紝鏁版嵁搴撳浗浜у寲涓嶆槸鍙€夐」锛岃€屾槸鍚堣鍓嶆彁鏉′欢銆?/div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 淇″垱璁鸿瘉 鍗＄墖 -->
+    <div class="anchor-card">
+            <div class="flow-swap-title">淇″垱璁鸿瘉</div>
+      <div class="anchor-inline">
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓€</span><div><span class="anchor-name">銆婂浗鍔￠櫌鍏充簬浜т笟閾句緵搴旈摼瀹夊叏鐨勮瀹氥€嬶紙2026骞?鏈堝浗鍔￠櫌浠わ級</span><span class="anchor-sub">鏁版嵁搴撹绾冲叆"鍏抽敭棰嗗煙娓呭崟"鐨勬硶寰嬩緷鎹?/span></div></div>
+          <div class="anchor-script-inline"><strong>2026骞?鏈?鏃ワ紝鍥藉姟闄㈡€荤悊鏉庡己绛剧讲鍥藉姟闄护锛屽叕甯冦€婂浗鍔￠櫌鍏充簬浜т笟閾句緵搴旈摼瀹夊叏鐨勮瀹氥€嬶紙鍏?8鏉★級锛岃嚜鍏竷涔嬫棩璧锋柦琛屻€?/strong>杩欐槸鎴戝浗棣栨浠ュ浗鍔￠櫌浠ゅ舰寮忓浜т笟閾句緵搴旈摼瀹夊叏杩涜绯荤粺鎬у埗搴﹀畨鎺掋€?
+
+<strong>绗竷鏉★細</strong>鍥藉寤虹珛鍏抽敭棰嗗煙娓呭崟鍒跺害骞跺疄琛屽姩鎬佽皟鏁淬€侰PU銆佹搷浣滅郴缁熴€佹暟鎹簱绛夊熀纭€杞欢棰嗗煙宸茶鏄庣‘鍒楀叆鍏抽敭鑼冪暣鈥斺€斾竴鏃︽煇绫讳骇鍝佹寮忕撼鍏ユ竻鍗曪紝浣跨敤鍗曚綅锛堝惈鍏珛鍖婚櫌浣滀负璐㈡斂鎷ㄦ鍗曚綅锛夊皢闈复鏄庣‘鐨勫浗浜у寲鏇夸唬鍚堣瑕佹眰銆傝繖涓嶆槸"寤鸿"锛岃€屾槸浠ュ浗鍔￠櫌浠や负渚濇嵁鐨勫己鍒舵€т箟鍔°€?
+
+<strong>绗崄浜屾潯锛?/strong>杩愯惀鑰呭簲褰?瀹炵幇鏍稿績鎶€鏈強鐩稿叧淇℃伅绯荤粺銆佹暟鎹殑瀹夊叏鍙帶"銆傚鏁版嵁搴撹€岃█锛岃繖鎰忓懗鐫€鍩轰簬寮€婧愪唬鐮佷簩娆″紑鍙戠殑浜у搧灏嗛潰涓村悎瑙勫鏌モ€斺€旀槸鍚︽嫢鏈夊畬鏁磋嚜涓荤煡璇嗕骇鏉冦€佹槸鍚﹀瓨鍦ㄤ緵搴旈摼鏂緵椋庨櫓锛屽皢鎴愪负閲囪喘璇勫鐨勭‖鎸囨爣銆?
+
+<strong>绗崄鍏潯锛?/strong>杩濊鑰呭皢琚檺鍒跺弬涓庢斂搴滈噰璐拰鎷涙姇鏍囥€傚叕绔嬪尰闄㈢殑璁惧涓庣郴缁熼噰璐潎灞炴斂搴滈噰璐寖鐣达紝姝ゆ潯娆剧洿鎺ユ瀯鎴愮害鏉熷姏銆?
+
+<div class="an-summary">鏁版嵁搴撳浗浜у寲宸蹭粠"浜т笟榧撳姳鏂瑰悜"涓婂崌涓?鍥藉姟闄护瑙勫畾鐨勬硶瀹氫箟鍔?锛屽叕绔嬪尰闄㈡棤娉曠疆韬簨澶栥€?/div>
+<div class="an-source">鏉ユ簮锛氫腑鍥芥斂搴滅綉 <a href="https://www.gov.cn/zhengce/content/202604/content_7064837.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/zhengce/content/202604/content_7064837.htm</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">浜?/span><div><span class="anchor-name">銆婂尰鐤楀崼鐢熸満鏋勬暟鎹畨鍏ㄥ拰涓汉淇℃伅淇濇姢绠＄悊鍔炴硶锛堣瘯琛岋級銆?/span><span class="anchor-sub">鍖荤枟琛屼笟棣栦釜鏁版嵁瀹夊叏寮哄埗瑙勮寖</span></div></div>
+          <div class="anchor-script-inline"><strong>2026骞村垵锛屽浗瀹跺崼鍋ュ銆佸叕瀹夐儴銆佸浗瀹剁綉淇″姙銆佸浗瀹朵腑鍖昏嵂绠＄悊灞€銆佸浗瀹剁柧鎺у眬浜旈儴闂ㄨ仈鍚堝嵃鍙戣鍔炴硶銆?/strong>杩欐槸鍖荤枟琛屼笟棣栦釜涓撻棬閽堝鏁版嵁瀹夊叏鍜屼釜浜轰俊鎭繚鎶ょ殑閮ㄩ棬瑙勭珷绾х鐞嗗姙娉曘€?
+
+<strong>绗簲鑷冲叓鏉★紙鏁版嵁鍒嗙骇闃叉姢锛夛細</strong>鍖荤枟鏁版嵁鍒嗕负鏍稿績鏁版嵁銆侀噸瑕佹暟鎹€佷竴鑸暟鎹笁绾с€傚瓨鍌ㄥ鐞嗛噸瑕佹暟鎹殑绯荤粺椤昏惤瀹炰笁绾у強浠ヤ笂绛変繚锛屽瓨鍌ㄥ鐞嗘牳蹇冩暟鎹殑绯荤粺椤昏惤瀹炲洓绾х瓑淇濄€傜瓑淇濇祴璇勪腑瀵规暟鎹簱鐨勫璁℃棩蹇椼€佽闂帶鍒躲€佸姞瀵嗗瓨鍌ㄣ€佽劚鏁忚兘鍔涙湁鏄庣‘妫€娴嬮」鈥斺€旇繖浜涜兘鍔涘繀椤诲湪鏁版嵁搴撳眰闈㈠師鐢熸敮鎸佹垨娣卞害闆嗘垚锛屼簨鍚庢墦琛ヤ竵鏃犳硶閫氳繃娴嬭瘎銆?
+
+<strong>绗節鏉★紙鎶€鏈繚闅滄帾鏂斤級锛?/strong>鍖荤枟鏈烘瀯椤昏惤瀹炲洓绫讳繚闅滄帾鏂解€斺€斿叾涓妧鏈繚闅滄槑纭寘鎷姞瀵嗐€佸璁°€侀壌鏉冦€佽璇併€佽劚鏁忋€佹按鍗般€傝揪姊M8鏁版嵁搴撳師鐢熸彁渚涘叏鍒楀姞瀵嗐€侀€忔槑鏁版嵁鍔犲瘑锛圱DE锛夈€佺粏绮掑害瀹¤銆佽绾ц闂帶鍒剁瓑鍔熻兘锛屾棤闇€棰濆閲囪喘绗笁鏂圭粍浠跺嵆鍙弧瓒虫湰鍔炴硶鐨勬妧鏈姹傘€?
+
+<strong>绗崄涓€鏉★紙鍏抽敭淇℃伅鍩虹璁炬柦锛夛細</strong>涓夌骇浠ヤ笂鍖婚櫌鐨凥IS/EMR绛夋牳蹇冪郴缁熷睘浜庡叧閿俊鎭熀纭€璁炬柦锛岄』钀藉疄鏇撮珮绛夌骇鐨勫畨鍏ㄤ繚鎶よ姹傗€斺€旇繖鐩存帴鎸囧悜鏍稿績涓氬姟鏁版嵁搴撶殑鑷富鍙帶閫夊瀷銆?
+
+<strong>绗簩鍗佷簩鏉★紙缃氬垯锛夛細</strong>杩濊鏈烘瀯灏嗛潰涓磋鍛娿€佺綒娆撅紙鏈€楂樺彲澶勪互楂橀缃氭锛夈€佽矗浠ゅ仠涓氭暣椤跨瓑澶勭綒銆?
+
+<div class="an-summary">鍖荤枟鏁版嵁瀹夊叏宸茶繘鍏?寮哄埗鍚堣鏃朵唬"锛屾暟鎹簱鐨勫畨鍏ㄨ兘鍔涗笉鍐嶆槸鍔犲垎椤癸紝鑰屾槸閫氳繃绛変繚娴嬭瘎鍜岃涓氭鏌ョ殑纭€ч棬妲涖€?/div>
+<div class="an-source">鏉ユ簮锛氭悳鐙愯浆杞?<a href="https://www.sohu.com/a/1005737519_416839" target="_blank" style="color:inherit;text-decoration:underline;">https://www.sohu.com/a/1005737519_416839</a><br>PDF鍘熸枃锛堝北涓滅渷鍖诲笀鍗忎細杞彂锛?<a href="https://www.sdca.com.cn/uploads/file/2604/09/2604091953428eosb.pdf" target="_blank" style="color:inherit;text-decoration:underline;">https://www.sdca.com.cn/uploads/file/2604/09/2604091953428eosb.pdf</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓?/span><div><span class="anchor-name">2026骞村叏鍥藉崼鐢熷仴搴峰伐浣滀細璁?/span><span class="anchor-sub">"鏁版櫤璧嬭兘"+"妫€鏌ユ楠屼簰璁?鍐欏叆骞村害閲嶇偣</span></div></div>
+          <div class="anchor-script-inline"><strong>2026骞?鏈?鏃ヨ嚦6鏃ワ紝鍏ㄥ浗鍗敓鍋ュ悍宸ヤ綔浼氳鍦ㄥ寳浜彫寮€銆?/strong>浼氳灏?澶у姏鍙戝睍鍗敓鍋ュ悍鏂拌川鐢熶骇鍔?鍒椾负绗崄椤瑰勾搴﹂噸鐐逛换鍔★紝瀛愪换鍔″寘鍚細鎺ㄨ繘鏁版櫤璧嬭兘銆?
+
+<strong>鎺ㄨ繘鏁版櫤璧嬭兘锛?/strong>鍖荤枟AI銆佸ぇ鏁版嵁鍒嗘瀽銆佹櫤鑳借緟鍔╄瘖鏂瓑搴旂敤鐨勫墠鎻愭槸楂樿川閲忕殑鏁版嵁搴曞骇銆備簲閮ㄥ2025骞?0鏈堢殑AI+鍖荤枟鍗敓鏂囦欢锛堝浗鍗姙瑙勫垝鍙戙€?025銆?0鍙凤級宸叉槑纭姹傚缓绔?楂樿川閲忓尰鐤楀仴搴锋暟鎹殑鍙俊鏁版嵁绌洪棿"鈥斺€斿彲淇℃暟鎹┖闂寸殑搴曞眰鏁版嵁搴撳繀椤绘槸鑷富鍙帶鐨勶紝鍚﹀垯瀛樺湪鏁版嵁涓绘潈椋庨櫓銆?
+
+<strong>澧炲姞甯傚煙鍐呮鏌ユ楠屼簰璁ら」鐩紙绗洓椤?涓烘皯鏈嶅姟瀹炰簨"锛夛細</strong>妫€鏌ユ楠屼簰璁ら渶瑕佷笉鍚屽尰闄箣闂寸殑褰卞儚銆佹楠岀粨鏋滆兘澶熻法鏈烘瀯璋冮槄鍜屾瘮瀵癸紝杩欎緷璧栧尯鍩熺骇鏁版嵁鍏变韩骞冲彴鈥斺€旇€屽尯鍩熷钩鍙扮殑缁熶竴鏁版嵁搴曞骇锛屽張鎸囧悜鍥戒骇鏁版嵁搴撱€?
+
+<div class="an-summary">鍥藉鍗仴濮?026骞村伐浣滈噸鐐瑰凡缁忔妸"鏁版嵁搴曞骇鑳藉姏"宓屽叆骞村害鑰冩牳妗嗘灦鈥斺€旀暟鏅哄寲鍜屼簰璁や簰闃呯殑鑳屽悗锛岄兘闇€瑕佷竴涓粺涓€鐨勩€佸彲鎺х殑鏁版嵁搴撴潵鏀拺銆?/div>
+<div class="an-source">鏉ユ簮锛氫腑鍥芥斂搴滅綉 <a href="https://www.gov.cn/lianbo/202601/content_7054072.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/lianbo/202601/content_7054072.htm</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">鍥?/span><div><span class="anchor-name">銆婄揣瀵嗗瀷鍘垮煙鍖诲叡浣撲俊鎭寲鍔熻兘鎸囧紩銆嬶紙2025骞?鏈堬級</span><span class="anchor-sub">淇″垱鍐欏叆鍔熻兘鎸囧紩锛屾暟鎹簱鍚嶅垪鍏朵腑</span></div></div>
+          <div class="anchor-script-inline"><strong>2025骞?鏈?2鏃ワ紝鍥藉鍗仴濮旇仈鍚堝閮ㄩ棬鍙戝竷璇ユ寚寮曘€?/strong>棣栨鍦ㄩ儴濮斿眰闈㈡槑纭瀹氾細鍘垮煙鍖诲叡浣撶殑鍩虹璁炬柦锛堟湇鍔″櫒銆佸瓨鍌級銆佸熀纭€杞欢锛堟搷浣滅郴缁熴€佷腑闂翠欢銆佹暟鎹簱锛夊繀椤荤鍚堜俊鍒涙爣鍑嗐€?
+
+铏界劧鏂囦欢鍚嶄箟涓婄殑绾︽潫瀵硅薄鏄幙鍩熷尰鍏变綋锛屼絾閲婃斁鐨勬斂绛栦俊鍙烽€傜敤浜庢墍鏈夊眰绾у叕绔嬪尰鐤楁満鏋勶細
+路 淇″垱浠?鍊″鎬у彛鍙?鍗囩骇涓?鍏锋湁鎿嶄綔鏉℃鐨勮鑼冩€ф枃浠?
+路 鏁版嵁搴撲笌鎿嶄綔绯荤粺骞跺垪锛屽悓灞炲繀椤诲浗浜у寲鐨勫熀纭€杞欢鑼冪暣
+路 鍦板競浠ヤ笂鍖婚櫌鑻ユ湭鏉ュ弬涓庡尰鍏变綋鐗靛ご鎴栧尯鍩熷崗鍚岄」鐩紝鍚屾牱閫傜敤姝ゆ爣鍑?
+
+<div class="an-summary">淇″垱鏇夸唬鍦ㄥ尰鐤楄涓氬凡缁忓叿澶囦簡鍙墽琛岀殑鍔熻兘鎸囧紩鏉℃锛屾暟鎹簱鍥戒骇鍖栨湁绔犲彲寰€?/div>
+<div class="an-source">鏉ユ簮锛氭悳鐙愭柊闂?<a href="https://www.sohu.com/a/872117734_100232921" target="_blank" style="color:inherit;text-decoration:underline;">https://www.sohu.com/a/872117734_100232921</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">浜?/span><div><span class="anchor-name">銆婂叧浜庝績杩涘拰瑙勮寖"浜哄伐鏅鸿兘+鍖荤枟鍗敓"搴旂敤鍙戝睍鐨勫疄鏂芥剰瑙併€?/span><span class="anchor-sub">AI+鍖荤枟鐨勫墠鎻愭槸鑷富鍙帶鏁版嵁搴曞骇</span></div></div>
+          <div class="anchor-script-inline"><strong>2025骞?0鏈?0鏃ワ紝鍥藉鍗仴濮斻€佸彂鏀瑰銆佸伐淇￠儴銆佷腑鍖昏嵂灞€銆佺柧鎺у眬浜旈儴濮旇仈鍚堝彂鏂囷紙鍥藉崼鍔炶鍒掑彂銆?025銆?0鍙凤級銆?/strong>鎻愬嚭鍒?027骞寸殑鐩爣锛?
+路 寤烘垚鍥藉鍖荤枟鍋ュ悍鏁版嵁涓績鍜岀伨澶囦腑蹇?
+路 寤虹珛鍏ㄥ浗缁熶竴鐨勫仴搴蜂俊鎭富绱㈠紩
+路 鏋勫缓楂樿川閲忓尰鐤楀仴搴锋暟鎹殑鍙俊鏁版嵁绌洪棿
+路 褰㈡垚涓€鎵逛复搴婁笓鐥呬笓绉戝瀭鐩村ぇ妯″瀷鍜屾櫤鑳戒綋搴旂敤
+
+瀵规暟鎹簱鐨勫惈涔夛細
+路 "鏁版嵁涓績""鐏惧涓績""鍙俊鏁版嵁绌洪棿"鈥斺€旇繖涓変釜鍩虹璁炬柦鐨勬牳蹇冪粍浠跺氨鏄暟鎹簱
+路 "楂樿川閲忔暟鎹?鐨勫墠鎻愭槸鏁版嵁缁撴瀯缁熶竴銆佹爣鍑嗕竴鑷粹€斺€旇繖姝ｆ槸澶氭暟鎹簱骞跺瓨鏋舵瀯鏈€闅捐В鍐崇殑闂
+路 鍥藉灞傞潰鐨勬暟鎹腑蹇冧笉鍙兘寤虹珛鍦ㄥ浗澶栨暟鎹簱浜у搧涔嬩笂鈥斺€旇嚜涓诲彲鎺ф槸闅愬惈鍓嶆彁鏉′欢
+
+<div class="an-summary">濡傛灉璐甸櫌甯屾湜鍦ㄦ湭鏉?-3骞村唴鎺ュ叆鍥藉绾I+鍖荤枟鑳藉姏浣撶郴锛岀幇鍦ㄥ氨闇€瑕佺潃鎵嬬粺涓€鏁版嵁搴曞骇锛涜秺鏅氬惎鍔紝鍘嗗彶鏁版嵁璐熸媴瓒婃矇閲嶃€?/div>
+<div class="an-source">鏉ユ簮锛氬浗鍔￠櫌鏀跨瓥鏂囦欢搴?<a href="https://www.gov.cn/zhengce/zhengceku/202511/content_7047018.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/zhengce/zhengceku/202511/content_7047018.htm</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">鍏?/span><div><span class="anchor-name">2027骞撮獙鏀惰妭鐐?+ 琛屼笟鍏堣妗堜緥</span><span class="anchor-sub">鏃堕棿绐楀彛姝ｅ湪鏀剁獎</span></div></div>
+          <div class="anchor-script-inline">鏍规嵁"鍗佸洓浜?淇℃伅鍖栬鍒掑強鐩稿叧鏂囦欢锛屽厷鏀挎満鍏冲強閲嶇偣琛屼笟鐨勪俊鍒涙敼閫犻獙鏀剁洰鏍囬泦涓湪2027骞村墠瀹屾垚銆傚尰鐤楄涓氫綔涓哄叧閿俊鎭熀纭€璁炬柦棰嗗煙琚撼鍏ラ噸鐐规帹杩涜寖鐣淬€?
+
+2025-2026骞达紝鍖荤枟淇″垱宸蹭粠"鏍囨潌绀鸿寖"杩涘叆"瑙勬ā鍖栧鍒?闃舵銆備互涓嬪潎涓轰互杈炬ⅵ鏁版嵁搴撲负搴曞骇鐨勫疄闄呮渚嬶紙鏍稿績绯荤粺鍏ㄩ潰鏇挎崲鍖婚櫌鍚嶅崟锛夛細
+路 绂忓窞涓ゅ鎬诲尰闄細40浣欎釜鏍稿績绯荤粺鍏ㄦ爤鍒囨崲
+路 鏂扮枂绗叚浜烘皯鍖婚櫌锛氬叏鏍堝浗浜у寲锛?灏忔椂瀹屾垚鍏ㄩ噺杩佺Щ
+路 鍘﹂棬澶у闄勫睘鎴愬姛鍖婚櫌锛?9涓簲鐢ㄣ€?1浜挎潯鏁版嵁杩愯涓ゅ勾澶?
+路 鎴愰兘鍏ㄦ皯鍋ュ悍淇℃伅骞冲彴锛氳鐩?3涓尯鍘裤€?500+鍖荤枟鏈烘瀯
+
+浠庤瘎浼板埌涓婄嚎閫氬父闇€瑕?2-18涓湀鈥斺€斾粖骞村惎鍔ㄦ椂闂村厖瑁曪紝鏄庡勾鍚姩鍒欓潰涓撮泦涓氦浠樼殑璧勬簮鎸ゅ帇銆?
+
+<div class="an-summary">鍚岃宸茬粡鍦ㄨ鍔ㄣ€?027骞存槸楠屾敹澶ч檺锛屾椂闂寸獥鍙ｆ鍦ㄦ敹绐勩€?/div>
+<div class="an-source">鏉ユ簮锛欻IT涓撳缃?<a href="https://www.hit180.com/?p=76705" target="_blank" style="color:inherit;text-decoration:underline;">https://www.hit180.com/?p=76705</a><br>绂忓窞妗堜緥锛?a href="https://www.chinaz.com/2026/0423/1748325.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chinaz.com/2026/0423/1748325.shtml</a><br>鏂扮枂鍏櫌锛?a href="http://cn.chinadaily.com.cn/a/202511/17/WS691ae413a310942cc4991dc8.html" target="_blank" style="color:inherit;text-decoration:underline;">http://cn.chinadaily.com.cn/a/202511/17/WS691ae413a310942cc4991dc8.html</a></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 杈炬ⅵ浠峰€?鍗＄墖 -->
+    <div class="anchor-card">
+            <div class="flow-swap-title">杈炬ⅵ浠峰€?/div>
+      <div class="anchor-inline">
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓€</span><div><span class="anchor-name">涓氬姟杩炵画鎬р€斺€旀崲搴撲笉褰卞搷涓村簥</span><span class="anchor-sub">閲戣瀺绾ч珮鍙敤锛岄浂涓柇鍒囨崲</span></div></div>
+          <div class="anchor-script-inline">绂忓窞涓ゅ涓夌敳鍖婚櫌鐨勫疄璺垫槸鏈€鏈夊姏鐨勮瘉鏄庛€?
+
+<strong>绂忓窞甯傜涓€鎬诲尰闄?/strong>锛堜笅杈?涓櫌鍖恒€佺紪鍒跺簥浣?000浣欏紶銆佹棩鍧囬棬璇?000浣欎汉娆★級鍜?strong>绂忓窞甯傜浜屾€诲尰闄?/strong>锛堜笅杈?涓櫌鍖恒€佺紪鍒跺簥浣?800浣欏紶銆佹棩鍧囬棬璇?000浣欎汉娆★級浜?025骞?1鏈堣嚦2026骞?鏈堟湡闂达紝鍏堝悗瀹屾垚40浣欎釜鏍稿績鍖荤枟鐢熶骇绯荤粺鍒拌揪姊M8鏁版嵁搴撶殑鍏ㄦ爤鍒囨崲锛屾兜鐩朒IS銆丩IS銆丳ACS绛夊叏閮ㄦ牳蹇冧笟鍔°€?
+
+<strong>鎶€鏈柟妗堣鐐癸細</strong>
+路 閮ㄧ讲杈炬ⅵ鏁版嵁瀹堟姢闆嗙兢锛圖MDataWatch锛夛紝鍏峰閲戣瀺绾ч珮鍙敤鑳藉姏锛屼换涓€鑺傜偣鏁呴殰鏃剁郴缁熷彲鍦ㄦ暟绉掑唴鑷姩鍒囨崲
+路 鍚屾閮ㄧ讲杈炬ⅵ鏁版嵁鍏变韩闆嗙兢锛屾弧瓒冲ぇ鍨嬩笁鐢插尰闄㈤珮骞跺彂鍦烘櫙涓嬬殑绋冲畾鎬ц姹?
+路 鍚屾閮ㄧ讲杈炬ⅵ鏁版嵁澶嶅埗杞欢锛圖MDRS锛夛紝瀹炵幇鏂版棫鏁版嵁搴撳疄鏃跺悓姝ワ紝纭繚鍓嶇涓氬姟鎿嶄綔涓嶅彈骞叉壈
+路 杈炬ⅵ鍥㈤槦寤虹珛"鍓嶇鍝嶅簲+鍚庣椹诲満"鍙岄噸淇濋殰鏈哄埗锛屽壊鎺ョ獥鍙ｆ湡澶氬悕宸ョ▼甯堝父椹荤幇鍦哄叏澶╁€欎繚闅?
+
+<strong>涓婄嚎缁撴灉锛?/strong>涓ゅ鎬诲尰闄俊鎭郴缁熺洰鍓嶈繍琛岀ǔ瀹氾紝鎵撶牬浜嗗師鏈夊悇闄㈠尯闂寸殑淇℃伅澹佸瀿锛屽疄鐜颁簡璺ㄩ櫌鍖虹梾鍘嗚皟闃呬笌妫€鏌ョ粨鏋滀簰璁ゃ€?
+
+<strong>鏂扮枂绗叚浜烘皯鍖婚櫌</strong>浣滀负鏂扮枂鍦板尯棣栦釜瀹屾垚鍏ㄦ爤鍥戒骇鍖栫殑涓夌骇缁煎悎鍖婚櫌锛堜袱闄㈠尯銆?500寮犲簥浣嶏級锛屼簬2025骞?0鏈?1鏃ュ闂村畬鎴怘IS銆丒MR銆佹暟鎹腑蹇冪瓑鍗佷綑涓牳蹇冪郴缁熺殑鍚屾涓婄嚎銆傚綋澶滀粎鐢?灏忔椂鍗冲畬鎴愬叏閲忓巻鍙叉暟鎹紙15骞村畬鏁存暟鎹級杩佺Щ涓庝笟鍔″垏鍓诧紝瀹炵幇涓婄嚎闆舵晠闅溿€佷笟鍔￠浂涓柇锛屽尰鎶や汉鍛樹笌鎮ｈ€?鏃犳劅鐭ュ垏鎹?銆備笂绾垮悗鏍稿績涓氬姟鍝嶅簲鏃堕棿杈冩棫绯荤粺鎻愬崌15%銆?
+
+<div class="an-source">鏉ユ簮锛欳hinaZ绉戞妧鎶ラ亾 <a href="https://www.chinaz.com/2026/0423/1748325.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chinaz.com/2026/0423/1748325.shtml</a><br>缁忔祹瑙傚療缃?<a href="https://www.eeo.com.cn/2026/0204/786296.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.eeo.com.cn/2026/0204/786296.shtml</a><br>涓浗鏃ユ姤缃?<a href="http://cn.chinadaily.com.cn/a/202511/17/WS691ae413a310942cc4991dc8.html" target="_blank" style="color:inherit;text-decoration:underline;">http://cn.chinadaily.com.cn/a/202511/17/WS691ae413a310942cc4991dc8.html</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">浜?/span><div><span class="anchor-name">鏁版嵁瀹屾暣鎬р€斺€旀暟鎹璐?/span><span class="anchor-sub">杩佺Щ鍓嶅悗鏁版嵁100%涓€鑷?/span></div></div>
+          <div class="anchor-script-inline">鏁版嵁搴撴浛鎹㈡渶澶х殑椤捐檻涔嬩竴鏄巻鍙叉暟鎹涪澶辨垨閿欎贡銆傝揪姊﹀湪瀹為檯椤圭洰涓缓绔嬩簡瀹屾暣鐨勮縼绉婚獙璇佹満鍒讹細
+
+路 <strong>杩佺Щ鍓嶏細</strong>鍏ㄩ噺鏁版嵁璧勪骇鐩樼偣锛屽缓绔嬫簮绔笌鐩爣绔殑瀛楁鏄犲皠娓呭崟
+路 <strong>杩佺Щ涓細</strong>DMDTS锛堣揪姊︽暟鎹縼绉诲伐鍏凤級鏀寔涓绘祦鏁版嵁搴撳埌DM8鐨勮嚜鍔ㄥ寲杩佺Щ锛屽吋瀹筄racle/SQL Server/MySQL绛夎娉曞拰鏁版嵁绫诲瀷
+路 <strong>杩佺Щ鍚庯細</strong>閫愯〃閫愬瓧娈电殑鏁版嵁涓€鑷存€ф牎楠岋紝纭繚杩佺Щ鍓嶅悗鏁版嵁100%涓€鑷?
+
+浠ョ宸為」鐩负渚嬶細40浣欎釜绯荤粺鐨勫巻鍙叉暟鎹叏閮ㄥ畬鎴愬叏閲忔牎楠岋紝鑽搧鑰楁潗鏁版嵁鏍稿涓€娆℃€ф垚鍔燂紝棣栧紶闂ㄨ瘖鐢靛瓙鐥呭巻淇濆瓨涓€娆℃€ф垚鍔熴€傝繖涓€鐐瑰浜庤瘎绾у鏌ャ€佸尰淇濈ń鏌ャ€佺瓑淇濇祴璇勫潎鏈夌洿鎺ユ剰涔夆€斺€旀暟鎹粡寰楄捣瀹℃煡銆?
+
+姝ゅ锛岀粺涓€鍒拌揪姊︽暟鎹簱搴曞骇鍚庯紝璺ㄧ郴缁熸暟鎹竴鑷存€т粠鏍规湰涓婂緱鍒拌В鍐斥€斺€擧IS涓殑鎮ｈ€呭熀鏈俊鎭笌LIS涓殑妫€楠岃褰曘€丳ACS涓殑褰卞儚鏁版嵁鍩轰簬鍚屼竴濂楁暟鎹簱锛屼笉鍐嶅瓨鍦ㄥ洜澶氭簮寮傛瀯瀵艰嚧鐨勬暟鎹啿绐併€傜宸炲競涓ゅ鎬诲尰闄笂绾垮悗锛屽尰鐢熸帴璇婃椂鍙竴閿煡闃呮偅鑰呭湪鍚勯櫌鍖虹殑鍘嗗彶鐥呭巻鍜屽奖鍍忚祫鏂欙紝鍑忓皯浜嗕笉蹇呰鐨勯噸澶嶆鏌ャ€?
+
+<div class="an-source">鏉ユ簮锛欳hinaZ绉戞妧鎶ラ亾 <a href="https://www.chinaz.com/2026/0423/1748325.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chinaz.com/2026/0423/1748325.shtml</a></div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓?/span><div><span class="anchor-name">闀挎湡鍙淮鎶ゆ€р€斺€斿師鍘傛湇鍔′綋绯?+ 鑷富鐮斿彂搴曠嚎</span><span class="anchor-sub">33涓湇鍔＄綉鐐癸紝600浣欏悕宸ョ▼甯?/span></div></div>
+          <div class="anchor-script-inline">姝︽眽杈炬ⅵ鏁版嵁搴撹偂浠芥湁闄愬叕鍙镐骇鍝佹湇鍔′腑蹇冩€荤粡鐞嗛粍娴锋槑锛堥珮绾у伐绋嬪笀锛屼粠涓氳繎20骞达紝杈炬ⅵ鏈嶅姟鍥㈤槦鍒涘鎴愬憳锛屾寔鏈?1椤规巿鏉冨彂鏄庝笓鍒╋級鍦?026骞村垵鎾版枃绯荤粺闃愯堪浜嗗尰鐤椾俊鍒涗腑鏁版嵁搴撻€夊瀷鐨勬牳蹇冨師鍒欙細
+
+<span class="hl hl-policy">"鑷富鐮斿彂搴旀槸棣栬鍘熷垯銆傚畬鍏ㄦ帉鎻℃簮浠ｇ爜鐨勬暟鎹簱浜у搧锛岃兘澶熺‘淇濇妧鏈彂灞曠殑鑷富鏉冿紝浠庢牴鏈笂閬垮厤鍥犲閮ㄧ幆澧冨彉鍖栧鑷寸殑绯荤粺鎬ч闄┿€?</span>
+
+"鍩轰簬寮€婧愪唬鐮佹繁搴︽敼閫犵殑浜у搧锛屽湪鐭ヨ瘑浜ф潈銆佹寔缁緵搴旂瓑鏂归潰瀛樺湪涓嶇‘瀹氭€э紝鍙兘闈复'浜屾淇″垱'鐨勯闄┿€?
+
+"鍦ㄥ尰鐤椾俊鍒涜繘绋嬩腑锛屽師鍘傛湇鍔¤兘鍔涗笌浜у搧鎶€鏈疄鍔涘悓绛夐噸瑕併€?
+
+"闇€瑕佺壒鍒鎯曠殑鏄?鍏嶈垂闄烽槺'銆傛暟鎹簱杩愮淮鏄暱鏈熸寔缁殑宸ヤ綔锛岄渶瑕佺ǔ瀹氱殑涓撲笟鎶€鏈敮鎸併€傜己涔忓悎鐞嗗埄娑︽敮鎾戠殑鏈嶅姟鎵胯寰€寰€闅句互鎸佷箙锛屽彲鑳界粰鍖婚櫌甯︽潵鏇村ぇ鐨勯暱鏈熼闄┿€?
+
+<strong>杈炬ⅵ鍘熷巶鏈嶅姟鑳藉姏锛?/strong>
+路 鍏ㄥ浗寤虹珛<span class="hl hl-policy">33涓湇鍔＄綉鐐?/span>锛岃鐩栧悇鐪佷細鍙婁富瑕佸湴甯?
+路 閰嶅<span class="hl hl-policy">600浣欏悕涓撲笟宸ョ▼甯?/span>锛屽舰鎴愯鐩栧叏鍥界殑鍘熷巶鏈嶅姟浣撶郴
+路 鏈湴鍖栧揩閫熷搷搴旓細鍖荤枟绱ф€ユ晠闅滀笅鎵胯蹇€熷埌鍦烘敮鎸?
+路 鍏ㄧ敓鍛藉懆鏈熷弬涓庯細浠庨渶姹傚垎鏋愩€佹柟妗堣璁″埌杩佺Щ瀹炴柦銆佹€ц兘浼樺寲锛屽啀鍒伴暱鏈熻繍缁?
+
+<strong>杈炬ⅵ鍦ㄥ尰鐤楄涓氱殑瑕嗙洊锛?/strong>鎴嚦2025骞村簳锛岃揪姊︽暟鎹簱宸叉湇鍔′簬鍖呮嫭涓浗浜烘皯瑙ｆ斁鍐涙€诲尰闄€佸鏃﹀ぇ瀛﹂檮灞炲崕灞卞尰闄€佷笂娴蜂氦閫氬ぇ瀛﹀尰瀛﹂櫌闄勫睘鐟為噾鍖婚櫌銆佷笂娴蜂氦閫氬ぇ瀛﹀尰瀛﹂櫌闄勫睘鏂板崕鍖婚櫌銆佷笂娴峰競绗叚浜烘皯鍖婚櫌銆佷笂娴峰競鏅檧鍖轰腑蹇冨尰闄€佹俯宸炲尰绉戝ぇ瀛﹂檮灞炵涓€鍖婚櫌銆佹垚閮藉競濡囧コ鍎跨涓績鍖婚櫌銆佷笁浜氬競浜烘皯鍖婚櫌銆侀緳宀╁競涓尰闄㈢瓑鍦ㄥ唴鐨?0浣欏涓夌敳鍖婚櫌鍙婃暟鍗佸鍦板幙绾у尰鐤楁満鏋勶紝骞朵腑鏍囩煶瀹跺簞甯傚叏姘戝仴搴蜂俊鎭钩鍙扮瓑鍖哄煙鍖荤枟椤圭洰銆?
+
+<strong>鎶€鏈矾绾垮缓璁細</strong>鍖荤枟鏍稿績绯荤粺鎺ㄨ崘鏍囬厤鏂规涓?strong>DM8 + DMDataWatch锛堟暟鎹畧鎶ら泦缇わ級+ DMDRS锛堟暟鎹鍒惰蒋浠讹級</strong>鐨勭粍鍚堬細
+路 DM8锛氶泦涓紡鍏崇郴鍨嬫暟鎹簱锛屾壙杞紿IS/EMR/LIS/PACS绛夋牳蹇冧氦鏄撲笟鍔?
+路 DMDataWatch锛氫富澶囧疄鏃跺悓姝ラ泦缇わ紝纭繚RTO &lt; 30绉掋€丷PO = 0锛堟暟鎹浂涓㈠け锛?
+路 DMDRS锛氭暟鎹鍒惰蒋浠讹紝鐢ㄤ簬鏁版嵁涓績缁熻涓庡垎鏋愬満鏅殑鏁版嵁鍚屾
+
+杩欏缁勫悎宸插湪鏂扮枂绗叚浜烘皯鍖婚櫌銆佺宸炰袱瀹舵€诲尰闄㈢瓑椤圭洰涓獙璇佸彲琛屻€?
+
+<div class="an-source">鏉ユ簮锛欻IT涓撳缃?<a href="https://www.hit180.com/?p=76705" target="_blank" style="color:inherit;text-decoration:underline;">https://www.hit180.com/?p=76705</a><br>杈炬ⅵ瀹樼綉妗堜緥椤?<a href="https://eco.dameng.com/cases/" target="_blank" style="color:inherit;text-decoration:underline;">https://eco.dameng.com/cases/</a><br>缁忔祹瑙傚療缃?<a href="https://www.eeo.com.cn/2026/0204/786296.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.eeo.com.cn/2026/0204/786296.shtml</a></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 浜夊彇涓嬩竴姝ャ€愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-next">
+      <div class="flow-lock">
+        <div class="flow-lock-title">浜夊彇涓嬩竴姝?/div>
+        <div class="flow-lock-body">闄㈤暱锛屼互涓婃槸鎴戜滑鍦ㄥ悓绫诲尰闄㈠疄璺典腑鎬荤粨鍑虹殑鏍稿績缁忛獙銆?
+
+涓嬩竴姝ュ彲浠ュ畨鎺掍俊鎭鑰佸笀涓庢垜浠殑鎶€鏈【闂仛涓€娆℃繁搴﹀鎺ワ紝澶х害涓€涓皬鏃讹紝瀹屾垚璐甸櫌鐜版湁鏁版嵁搴撶幆澧冪殑鍩虹嚎璇勪及锛岃緭鍑轰竴浠借縼绉诲彲琛屾€ф姤鍛娿€?span class="rd">涓嶄骇鐢熶换浣曡垂鐢紝涔熶笉鏋勬垚浠讳綍閲囪喘鎵胯</span>銆傛偍鐪嬪懆鍑犳柟渚裤€?/div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ========== 淇℃伅绉?========== -->
+<!-- ============================================================ -->
+<div id="content-it" class="content">
+
+  <div class="duration-tabs">
+    <button class="duration-tab active" onclick="switchDuration('it','1min')">1 鍒嗛挓</button>
+    <button class="duration-tab" onclick="switchDuration('it','5min')">5 鍒嗛挓</button>
+  </div>
+
+  <!-- ========== 1鍒嗛挓 ========== -->
+  <div id="it-1min">
+
+    <div class="flow-strip">
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">韬唤瀹氫綅</span><span class="ft-arr">鈫?/span>
+      <span class="ft-s" style="background:var(--pain-bg);color:var(--pain-accent);">鐥涚偣鎻忚堪</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">淇″垱绐楀彛</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--next-bg);color:var(--next-text);">浜夊彇涓嬩竴姝?/span>
+    </div>
+
+    <!-- 韬唤瀹氫綅銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">韬唤瀹氫綅</div>
+        <div class="flow-lock-body">涓讳换鎮ㄥソ锛屾垜鏄揪姊︽暟鎹殑[濮撳悕]銆備粖澶╂潵涓嶆槸璺熸偍璁蹭俊鍒涙斂绛栫殑锛岄偅浜涙偍鏇存竻妤氥€傛垜浠兂閽堝鍏蜂綋闂璺熸偍姹囨姤锛?span class="hl hl-ident">鏁版嵁搴撳浗浜у寲鏇挎崲</span>锛屼俊鎭闈㈠鐨?span class="hl hl-ident">鍗＄偣</span>鏄粈涔堬紝杈炬ⅵ鎬庝箞甯偍鎶婂畠鍘嬪埌鏈€浣庛€?/div>
+      </div>
+    </div>
+
+    <!-- 鐥涚偣鎻忚堪銆愬彲鏇挎崲銆戝崱鐗?-->
+    <div class="flow-swap">
+      <div class="flow-swap-title">鐥涚偣鎻忚堪</div>
+      <div class="pain-inline">
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓€</span><div><span class="pain-name">閫氱敤 鏁版嵁璐ㄩ噺</span><span class="pain-sub">淇℃伅绉戞棩甯告暟鎹换鍔″帇鍔涘ぇ</span></div></div>
+          <div class="pain-script-inline">淇℃伅绉戞瘡澶╅潰涓村悇绫绘暟鎹笂鎶ワ紝杩橀渶瑕佹敮鎾戝悇绫昏瘎绾х殑鏁版嵁璐ㄩ噺銆傚伐浣滈噺宸ㄥぇ銆?
+
+<span class="hl hl-pain">鏁版嵁搴撹縼绉讳箣鍓嶅繀椤诲鍏ㄥ簱鍋氱粨鏋勫拰鍏ㄩ噺鏁版嵁鐨勭洏鐐逛笌鏍￠獙</span>鈥斺€旀瘡寮犺〃銆佹瘡涓瓧娈点€佹瘡涓瓧绗﹂泦閮借鏍稿銆?
+
+杩欎欢浜嬪钩鏃朵俊鎭鎯冲仛锛屼絾寰堥毦鏈夌簿鍔涘仛銆傛暟鎹簱杩佺Щ姝ｅソ鍙互椤哄娍瀹屾垚杩欎釜宸ヤ綔銆?鍊熸鏈轰細锛屾妸骞虫椂鍙戠幇浣嗘病鏃堕棿澶勭悊鐨勬暟鎹川閲忛棶棰樺叏閮ㄦ帓鏌ヤ竴閬嶏紝鏁寸悊鍑洪棶棰樻竻鍗曚綔涓烘湭鏉?span class="hl hl-pain">鏁版嵁娌荤悊鐨勪緷鎹?/span>銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">浜?/span><div><span class="pain-name">鎬ц兘鐒﹁檻</span><span class="pain-sub">鎷呭績鎹㈠簱鍚庢€ц兘涓嶅浠ュ墠</span></div></div>
+          <div class="pain-script-inline">淇℃伅绉戞渶鎷呭績鐨勫氨鏄崲瀹屼箣鍚?span class="hl hl-pain">鎬ц兘涓嶅浠ュ墠</span>锛屾垨鑰呰杈惧埌鍚屾牱鐨勬€ц兘闇€瑕?span class="hl hl-pain">娑堣€楁洿澶氱殑纭欢璧勬簮</span>銆?
+
+杩欎釜鎷呭績鐗瑰埆鍚堢悊锛屼絾<span class="hl hl-pain">[涓儴鎴樺尯鎬诲尰闄</span>涓婁釜鏈堝叕寮€鍒嗕韩鐨?span class="hl hl-pain">鏁版嵁</span>鏄細鑽搧涓氬姟SQL鏌ヨ浼樺寲鍓?6绉掞紝浼樺寲鍚?74姣锛涗笟鍔℃帴鍙ｈ皟鐢ㄤ紭鍖栧墠60绉掞紝浼樺寲鍚?.17绉掋€傝繖浜涢兘鏄?span class="hl hl-pain">鐢熶骇鐜鐨勭湡瀹炵粨鏋?/span>锛屼笉鏄疄楠屽鏁版嵁銆傛€ц兘闂锛屾垜浠湁鐪熷疄鏁版嵁鏀拺銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓?/span><div><span class="pain-name">涓氬姟涓柇 鏁版嵁涓€鑷存€ч闄?/span><span class="pain-sub">鎷呭績鍒囨崲瀵艰嚧涓氬姟涓柇</span></div></div>
+          <div class="pain-script-inline">鐞嗘€х殑閫夋嫨纭疄鏄啀绛夌瓑鐪嬶紝鍒囦换浣曟暟鎹簱閮戒細闈复涓氬姟涓柇鍜屾暟鎹涪澶辩殑椋庨櫓銆?
+
+杈炬ⅵ鎶€鏈笓瀹跺湪澶ч噺鍖婚櫌瀹炶返杩囩▼涓€荤粨鍑轰簡<span class="hl hl-pain">杈炬ⅵ杩佺Щ浜旀娉?/span>閰嶅悎鍚勭被宸ュ叿锛屽湪鐪熸鐨勭敤鎴峰満鏅痆涓儴鎴樺尯鎬诲尰闄锛屽氨鍋氬埌浜哛PO=0锛堟暟鎹浂涓㈠け锛夈€丷TO&lt;15绉掞紙鏁呴殰鑷姩鍒囨崲锛夈€傝繖涓寚鏍囨槸杈炬ⅵ鏁版嵁瀹堟姢闆嗙兢锛圖MDataWatch锛夌殑<span class="hl hl-pain">鏍囧噯鑳藉姏</span>锛屽苟闈炵壒渚嬨€傚闂存棤鎰熷钩婊戝垏鎹紝<span class="hl hl-pain">瀹屽叏涓嶅奖鍝嶆棩甯镐笟鍔?/span>鏄垜浠彲浠ュ仛鍒扮殑浜嬨€?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">鍥?/span><div><span class="pain-name">杩佺Щ/鍘傚晢鍗忚皟宸ヤ綔閲忓ぇ</span><span class="pain-sub">鎷呭績鍗忚皟鎴愭湰鍜岃矗浠昏竟鐣?/span></div></div>
+          <div class="pain-script-inline">鍑犲崄涓婄櫨涓氬姟绯荤粺锛屼粠鍝笅鎵嬶紵鍚勭被鏁版嵁搴擄紝閫傞厤宸ヤ綔閲忔湁澶氬ぇ锛?[鍘﹂棬澶у闄勫睘鎴愬姛鍖婚櫌]鐨?span class="hl hl-pain">鐪熷疄鏁版嵁</span>鏄縼[71]涓笟鍔＄郴缁燂紝杩佺Щ鐢ㄦ椂[110]鍒嗛挓銆?
+
+鍖呮嫭鍘傚晢閰嶅悎闂锛岃揪姊﹀湪<span class="hl hl-pain">鍏ㄨ涓?/span>瀹屾垚浜?span class="hl hl-pain">4000+</span>涓婁笅娓稿巶鍟嗛€傞厤銆?span class="hl hl-pain">16000+</span>杞‖浠跺崗鍚屼骇鍝佺爺鍙戯紱鍦?span class="hl hl-pain">鍖荤枟棰嗗煙</span>锛屾垜浠凡缁忚窡59瀹禝SV鏈夋爣鏉嗘渚嬶紝瑕嗙洊杩戠櫨瀹跺尰鐤楁満鏋勩€?5瀹朵笁绾у尰闄€?
+
+璐甸櫌鍦ㄧ敤鐨刐鍗畞/鍒涗笟鎱у悍/涓滆蒋/鍢夊拰/涓滃崕/鏅轰笟/閲嶅簡涓仈/娴锋嘲...][HIS/鐢靛瓙鐥呭巻]锛屾垜浠殑鍘熷巶宸茬粡璺熶粬浠湁<span class="hl hl-pain">娣卞害鑱斿悎閫傞厤缁忛獙</span>銆傚叿浣撻厤鍚堝埌浠€涔堢▼搴︼紝瀹屽叏鍙互涓€璧疯瘎浼帮紝涓嶄細鎶婂崗璋冩垚鏈帹缁欎俊鎭銆?/div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 淇″垱绐楀彛銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">淇″垱绐楀彛</div>
+        <div class="flow-lock-body">2027骞翠俊鍒涢獙鏀惰妭鐐硅繎鍦ㄥ挮灏猴紝杩欎釜鏀跨瓥绐楀彛璁╁尰闄㈡湁浜嗘妸鏁版嵁搴曞骇缁熶竴鍗囩骇鐨勫鏈恒€?/div>
+      </div>
+    </div>
+
+    <!-- 浜夊彇涓嬩竴姝ャ€愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-next">
+      <div class="flow-lock">
+        <div class="flow-lock-title">浜夊彇涓嬩竴姝?/div>
+        <div class="flow-lock-body">鎺ヤ笅鏉ユ垜鎯冲湪杩欎釜鍩虹涓婏紝杩涗竴姝ユ眹鎶ュ悜鎮ㄦ垜浠厖鍒嗚€冭檻甯傚満鍔ㄥ悜鍜屾斂绛栬秼鍔垮悗鐨勪笁涓粨璁恒€?span class="rd">鎮ㄧ幇鍦ㄦ柟渚垮悧锛?/span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== 5鍒嗛挓 ========== -->
+  <div id="it-5min" class="hidden">
+
+    <div class="flow-strip">
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">鎵挎帴涓€鍒嗛挓</span><span class="ft-arr">鈫?/span>
+      <span class="ft-s" style="background:var(--pain-bg);color:var(--pain-accent);">鐥涚偣灞曞紑</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">淇″垱璁鸿瘉</span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--fixed-bg);color:var(--fixed-accent);">杈炬ⅵ浠峰€?/span><span class="ft-arr">鈫?/span>
+      <span class="ft-l" style="background:var(--next-bg);color:var(--next-text);">浜夊彇涓嬩竴姝?/span>
+    </div>
+
+    <!-- 鎵挎帴涓€鍒嗛挓銆愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-fixed">
+      <div class="flow-lock">
+        <div class="flow-lock-title">鎵挎帴涓€鍒嗛挓</div>
+        <div class="flow-lock-body">鍒氭墠鎻愬埌鐨刐鎬ц兘鐒﹁檻/涓氬姟涓柇椋庨櫓/宸ヤ綔閲忓ぇ]鐨勯棶棰橈紝涓嶆槸璐甸櫌涓€瀹堕潰涓寸殑锛屾槸[涓夌敳鍖婚櫌淇℃伅绉慮鍏辨€ч棶棰樸€?
+
+鎴戞兂鍦ㄨ繖涓熀纭€涓婏紝杩涗竴姝ユ眹鎶ヤ笁涓垽鏂細
+
+绗竴锛屾暟鎹簱鍥戒骇鍖栫殑鏀跨瓥绐楀彛宸茬粡鎵撳紑锛屾椂闂寸害鏉熸槸鍒氭€х殑锛?绗簩锛屽厛琛屽尰闄㈢殑瀹炶返鏁版嵁璇佹槑锛岄闄╁彲鎺э紱 绗笁锛岄€夊鏁版嵁搴撲骇鍝佸拰鏈嶅姟浣撶郴锛屽喅瀹氫簡淇℃伅绉戞槸涓诲姩鎺ㄨ繘杩樻槸琚姩搴斿銆?/div>
+      </div>
+    </div>
+
+    <!-- 鐥涚偣灞曞紑銆愬彲鏇挎崲銆戝崱鐗?-->
+    <div class="flow-swap">
+      <div class="flow-swap-title">鐥涚偣灞曞紑</div>
+      <div class="pain-inline">
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓€</span><div><span class="pain-name">閫氱敤 鏁版嵁璐ㄩ噺</span><span class="pain-sub">鏁版嵁鐩樼偣鐨勬満浼氱獥鍙?/span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>淇℃伅绉戞棩甯告壙鎷呬笁绫绘暟鎹换鍔★細琛屾斂涓婃姤銆佽瘎绾ф敮鎾戙€佷复搴婃湇鍔°€備笁鑰呯殑鍏卞悓鍓嶆彁鏄暟鎹川閲忓彲鎺с€?
+
+澶氭暟鍖婚櫌鐨勬暟鎹川閲忔牎楠屽垎鏁ｅ湪鍚勪笟鍔＄郴缁熶腑锛屾病鏈夌粺涓€鐩樼偣杩囥€傚摢浜涘瓧娈电己澶便€佸摢浜涚紪鐮佷笉涓€鑷淬€佸摢浜涘瓧绗﹂泦鍐茬獊鈥斺€旀病鏈夊畬鏁存竻鍗曘€?
+
+鏁版嵁搴撹縼绉讳箣鍓嶏紝蹇呴』瀵瑰叏搴撳仛缁撴瀯鐩樼偣鍜屾暟鎹牎楠屻€傝繖浠朵簨淇℃伅绉戝钩鏃舵病鏈夊畬鏁寸殑鏃堕棿绐楀彛鏉ュ仛銆傛暟鎹簱杩佺Щ鐩稿綋浜庝竴娆″己鍒舵€х殑鏁版嵁鐩樼偣锛氭妸姣忓紶琛ㄣ€佹瘡涓瓧娈点€佹瘡涓瓧绗﹂泦鍏ㄩ儴鏍稿涓€閬嶏紝浜у嚭鐨勬暟鎹川閲忔姤鍛婏紝灏辨槸鏈潵鏁版嵁娌荤悊鐨勫熀绾裤€?
+
+<strong>鏍稿績瑙傜偣鎻愮偧锛?/strong>鏁版嵁搴撹縼绉讳笉鏄澶栬礋鎷咃紝鑰屾槸淇℃伅绉戝畬鎴?span class="hl hl-pain">鏁版嵁鐩樼偣鐨勬満浼氱獥鍙?/span>銆傝縼绉讳骇鍑虹殑鏁版嵁璐ㄩ噺娓呭崟锛屾槸鍚庣画鏁版嵁娌荤悊銆佽瘎绾ц繋妫€銆佷笂鎶ヨ川鎺х殑鍩虹璧勪骇銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">浜?/span><div><span class="pain-name">鎬ц兘鐒﹁檻</span><span class="pain-sub">鎬ц兘闂鐨勫伐绋嬪寲绠℃帶</span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>鎬ц兘鐒﹁檻鐨勬牳蹇冧笉鍦?鍥戒骇鏁版嵁搴撹涓嶈"锛岃€屽湪浜?鎹㈠畬涔嬪悗锛屽嚭浜嗛棶棰樻€庝箞鍏滃簳"銆?
+
+杩欎釜闂闇€瑕佷粠涓や釜灞傞潰鍥炲簲锛?
+
+绗竴锛岀敓浜х幆澧冩暟鎹€備腑閮ㄦ垬鍖烘€诲尰闄㈠叕寮€鍒嗕韩鐨勬寚鏍囨槸锛氳嵂鍝佷笟鍔QL鏌ヨ浼樺寲鍓?6绉掞紝浼樺寲鍚?74姣锛涗笟鍔℃帴鍙ｈ皟鐢ㄤ紭鍖栧墠60绉掞紝浼樺寲鍚?.17绉掋€傝繖涓嶆槸娴嬭瘯鏁版嵁锛屾槸鐢熶骇鐜鐨勮繍琛岀粨鏋溿€?
+
+绗簩锛屾€ц兘鍏滃簳鏈哄埗銆傝揪姊︽彁渚汼QL鍏ㄧ敓鍛藉懆鏈熶紭鍖栧伐鍏凤紝鍖呮嫭SQL璇婃柇銆佽嚜鍔ㄧ储寮曟帹鑽愩€佹墽琛岃鍒掑姣斻€傛€ц兘闂涓嶉渶瑕佺瓑鍑轰簨鍐嶆帓鏌ワ紝鍙互鍦ㄨ縼绉婚樁娈甸€氳繃瀵规瘮娴嬭瘯鎻愬墠璇嗗埆鍜屼紭鍖栥€?
+
+<strong>鏍稿績瑙傜偣鎻愮偧锛?/strong>鎬ц兘闂鏈川涓婃槸宸ョ▼闂锛屼笉鏄鐜囬棶棰樸€傛湁鐪熷疄鏁版嵁銆佹湁璇婃柇宸ュ叿銆佹湁浼樺寲娴佺▼锛?span class="hl hl-pain">鎬ц兘椋庨櫓鍙互琚噺鍖栧拰绠＄悊</span>銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">涓?/span><div><span class="pain-name">涓氬姟涓柇 鏁版嵁涓€鑷存€ч闄?/span><span class="pain-sub">涓氬姟杩炵画鎬х殑缁撴瀯鍖栫鎺?/span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>瀵逛笟鍔′腑鏂拰鏁版嵁涓㈠け鐨勬媴蹇э紝鏍稿績鏄鍙帶鎬х殑瑕佹眰銆?
+
+杈炬ⅵ鍦ㄥぇ閲忓尰闄㈠疄璺典腑褰㈡垚浜嗘爣鍑嗚縼绉绘柟娉曡鈥斺€旇揪姊﹁縼绉讳簲姝ユ硶锛氱幇鐘惰瘎浼扳€斺€斿吋瀹规€у垎鏋愨€斺€旇縼绉荤瓥鐣ュ埗瀹氣€斺€旀暟鎹縼绉讳笌搴旂敤閫傞厤鈥斺€旈獙璇佷笌浼樺寲锛涙瘡涓€姝ラ兘鏈夊搴斿伐鍏烽摼鏀拺锛屽寘鎷縼绉昏瘎浼板伐鍏枫€佹暟鎹悓姝ヨ蒋浠讹紙DMDRS锛夈€佽嚜鍔ㄦ牎楠屽伐鍏枫€?
+
+鍒囨崲鏃堕棿绐楀彛瀹夋帓鍦ㄥ闂翠笟鍔′綆璋锋湡锛岄噰鐢ㄥ閲忓悓姝?鐭殏鍒囨崲鐨勬柟寮忥紝瀵规棩甯镐笟鍔℃棤鎰熺煡銆?
+
+<strong>鏍稿績瑙傜偣鎻愮偧锛?/strong>涓氬姟杩炵画鎬ч闄╁彲浠ラ€氳繃鏂规硶璁哄拰宸ュ叿閾捐缁撴瀯鍖栧湴绠℃帶銆俁PO=0鍜孯TO&lt;15绉掓槸杈炬ⅵ鏁版嵁浜や粯鏍囧噯锛岃€岄潪涓缁撴灉銆?/div>
+        </div>
+        <div class="pain-row-item" onclick="this.classList.toggle('open')">
+          <div class="pain-row-top"><span class="pain-let">鍥?/span><div><span class="pain-name">杩佺Щ/鍘傚晢鍗忚皟宸ヤ綔閲忓ぇ</span><span class="pain-sub">鐢熸€侀€傞厤鍐冲畾鍗忚皟鎴愭湰</span></div></div>
+          <div class="pain-script-inline"><strong>鐜扮姸闄堣堪锛?/strong>鍑犲崄涓笟鍔＄郴缁熴€佸崄鍑犲ISV鍘傚晢锛屼俊鎭鏈€鎷呭績鐨勪笉鏄妧鏈湰韬紝鑰屾槸鍗忚皟鎴愭湰鍜岃矗浠昏竟鐣屻€?
+
+杩欎釜闂鍙互浠庝笁涓眰闈㈡媶瑙ｏ細
+
+绗竴锛岃縼绉诲伐浣滈噺鏈夌湡瀹炴暟鎹彲浠ュ弬鑰冦€傚帵闂ㄥぇ瀛﹂檮灞炴垚鍔熷尰闄紝71涓笟鍔＄郴缁燂紝鍏ㄩ儴杩佺Щ瀹屾垚鐢ㄦ椂110鍒嗛挓銆傝繖涓暟鎹殑鎰忎箟涓嶅湪浜?蹇?锛岃€屽湪浜庤鏄庯細杩佺Щ宸ヤ綔鐨勪富瑕佽€楁椂鍦ㄥ墠鏈熻瘎浼板拰閫傞厤锛屼笉鍦ㄦ墽琛岄樁娈点€傚墠鏈熷伐浣滃仛寰楄秺缁嗭紝鎵ц闃舵瓒婄煭銆?
+
+绗簩锛屽巶鍟嗗崗璋冧笉搴斿畬鍏ㄧ敱淇℃伅绉戞壙鎷呫€傝揪姊﹀湪鍏ㄨ涓氬畬鎴?000+涓婁笅娓稿巶鍟嗛€傞厤銆?6000+杞‖浠跺崗鍚屼骇鍝佺爺鍙戙€傚湪鍖荤枟棰嗗煙锛岃揪姊﹀凡缁忎笌50浣欏澶撮儴ISV瀹屾垚娣卞害閫傞厤锛堝崼瀹佸仴搴枫€佷笢杞€佷笢鍗庡尰涓恒€佸垱涓氭収搴风瓑锛夛紝瑕嗙洊HIS銆丒MR銆丩IS銆丳ACS鍏ㄥ搧绫汇€傝吹闄㈠湪鐢ㄧ殑绯荤粺锛岃揪姊﹀師鍘傚凡鏈夎仈璋冪粡楠岋紝鍏蜂綋閰嶅悎鍒颁粈涔堢▼搴︼紝鍙互鍦ㄨ瘎浼伴樁娈典竴璧风‘璁わ紝涓嶄細鎶婂崗璋冨帇鍔涙帹缁欎俊鎭銆?
+
+绗笁锛岃縼绉昏妭濂忓彲浠ョ敱鍖婚櫌涓诲銆備笉鏄墍鏈夌郴缁熷悓鏃跺垏鎹紝鑰屾槸鎸変笟鍔￠噸瑕佹€у拰渚濊禆鍏崇郴鍒嗘壒鎺ㄨ繘銆傚厛闈炴牳蹇冿紝鍚庢牳蹇冿紱鍏堝彧璇荤郴缁燂紝鍚庤鍐欑郴缁熴€傝妭濂忕敱鍖婚櫌淇℃伅绉戞帶鍒讹紝涓嶆槸鐢卞巶鍟嗗€掗€笺€?
+
+<strong>鏍稿績瑙傜偣鎻愮偧锛?/strong>宸ヤ綔閲忓ぇ鐨勬湰璐ㄦ槸鐢熸€侀€傞厤搴︿笉瓒炽€傚湪鍖荤枟ISV鐢熸€佷笂鐨勫墠鏈熸姇鍏ワ紝鐩存帴鍐冲畾浜嗕俊鎭鐨勫崗璋冩垚鏈€傝揪姊︽槸鍦ㄥ尰闄?span class="hl hl-pain">鐢熸€佸噯澶囧厖鍒嗙殑鏁版嵁搴撳巶鍟?/span>锛屼俊鎭鐨勫伐浣滈噺闆嗕腑鍦ㄥ喅绛栬€屼笉鏄墽琛屻€?/div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 淇″垱璁鸿瘉 鍗＄墖 -->
+    <div class="anchor-card">
+      <div class="flow-swap-title">淇″垱璁鸿瘉</div>
+      <div class="anchor-inline">
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓€</span><div><span class="anchor-name">娉曞緥涓庤鏀挎硶瑙勫凡鏄庣‘</span><span class="anchor-sub">鑷富鍙帶涓婂崌涓哄浗瀹跺畨鍏ㄥ垰鎬ц姹?/span></div></div>
+          <div class="anchor-script-inline"><strong>2026骞?鏈?1鏃ワ紝鍥藉姟闄㈡€荤悊鏉庡己绛剧讲鍥藉姟闄护锛堢834鍙凤級锛屽叕甯冦€婂浗鍔￠櫌鍏充簬浜т笟閾句緵搴旈摼瀹夊叏鐨勮瀹氥€嬶紝鑷叕甯冧箣鏃ヨ捣鏂借銆?/strong>杩欐槸棣栨浠ュ浗鍔￠櫌浠ゅ舰寮忓浜т笟閾句緵搴旈摼瀹夊叏杩涜绯荤粺鎬у埗搴﹀畨鎺掞紝鏍囧織鐫€"鑷富鍙帶"浠庝骇涓氬紩瀵肩洰鏍囨寮忎笂鍗囦负鍥藉瀹夊叏灞傞潰鐨勫垰鎬ц姹傘€傚浜庢暟鎹簱绛夊叧閿俊鎭熀纭€璁炬柦锛岃嚜涓诲彲鎺т笉鍐嶆槸"鍙€夐」"锛岃€屾槸娉曞畾搴曠嚎銆?
+
+鏉ユ簮锛?a href="https://www.gov.cn/gongbao/2026/issue_12686/202604/content_7066322.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/gongbao/2026/issue_12686/202604/content_7066322.htm</a>
+
+<strong>2024骞?鏈?0鏃ワ紝鍥藉姟闄㈠叕甯冦€婄綉缁滄暟鎹畨鍏ㄧ鐞嗘潯渚嬨€嬶紙鍥藉姟闄护绗?90鍙凤級锛岃嚜2025骞?鏈?鏃ヨ捣鏂借銆?/strong>鏉′緥鏄庣‘瑕佹眰锛氬鐞?000涓囦汉浠ヤ笂涓汉淇℃伅鐨勭綉缁滄暟鎹鐞嗚€咃紝搴斿綋閬靛畧閲嶈鏁版嵁澶勭悊鑰呯殑鐩稿叧瑙勫畾銆備簩绾т互涓婂尰闄㈢殑鎮ｈ€呮暟鎹妯℃櫘閬嶈秴杩囪繖涓€闃堝€笺€?
+
+鏉ユ簮锛?a href="https://www.gov.cn/gongbao/2024/issue_11646/202410/content_6980863.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/gongbao/2024/issue_11646/202410/content_6980863.htm</a>
+
+<div class="an-summary">娉曞緥涓庤鏀挎硶瑙勫凡鏋勬垚鏁版嵁搴撳浗浜у寲鐨勯《灞傜害鏉燂紝2027骞撮獙鏀朵笉鏄寽娴嬶紝鑰屾槸鏈夋槑纭硶瑙勪緷鎹殑鏃堕棿鑺傜偣銆?/div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">浜?/span><div><span class="anchor-name">琛屼笟鐩戠鏀跨瓥宸茶惤鍦?/span><span class="anchor-sub">鍖荤枟鏁版嵁瀹夊叏寮哄埗瑙勮寖鍑哄彴</span></div></div>
+          <div class="anchor-script-inline"><strong>2026骞?鏈堬紝鍥藉鍗敓鍋ュ悍濮斻€佸叕瀹夐儴銆佸浗瀹朵簰鑱旂綉淇℃伅鍔炲叕瀹ゃ€佸浗瀹朵腑鍖昏嵂绠＄悊灞€銆佸浗瀹剁柧鐥呴闃叉帶鍒跺眬浜旈儴闂ㄨ仈鍚堝嵃鍙戙€婂尰鐤楀崼鐢熸満鏋勬暟鎹畨鍏ㄥ拰涓汉淇℃伅淇濇姢绠＄悊鍔炴硶锛堣瘯琛岋級銆嬨€?/strong>杩欐槸棣栭儴涓撻棬閽堝鍖荤枟鍗敓鏈烘瀯鏁版嵁瀹夊叏鍜屼釜浜轰俊鎭繚鎶ょ殑閮ㄩ棬瑙勭珷锛屾槑纭姹傦細
+
+1. 瀵规暟鎹簱鎿嶄綔瀹炴柦瀹¤銆侀壌鏉冦€佽璇侊紱
+2. 瀵规暟鎹叡浜€佹煡璇€佷慨鏀广€佸垹闄よ涓虹暀瀛樺畨鍏ㄦ棩蹇楋紱
+3. 瀵规晱鎰熸暟鎹噰鍙栧姞瀵嗗瓨鍌ㄦ帾鏂斤紱
+4. 钀藉疄鏁版嵁瀹圭伨澶囦唤瑕佹眰锛屼繚闅滀笟鍔¤繛缁€с€?
+
+鏉ユ簮锛?a href="https://www.whcdc.org/yewuzhidao/falvfagui/guizhang/2026-03-13/10924.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.whcdc.org/yewuzhidao/falvfagui/guizhang/2026-03-13/10924.html</a>
+
+鍘熸枃PDF锛?a href="https://www.whcdc.org/d/file/p/2026/03-13/d579b605cc3fbc49c055f0140183db05.pdf" target="_blank" style="color:inherit;text-decoration:underline;">https://www.whcdc.org/d/file/p/2026/03-13/d579b605cc3fbc49c055f0140183db05.pdf</a>
+
+<div class="an-summary">琛屼笟鐩戠鏀跨瓥宸蹭粠"鎸囧鎰忚"鍗囩骇涓?閮ㄩ棬瑙勭珷绾у己鍒惰鑼?锛屾暟鎹簱瀹夊叏鑳藉姏鏄瓑淇濇祴璇勭殑纭€ч棬妲涳紝涓嶆槸鍔犲垎椤广€?/div></div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓?/span><div><span class="anchor-name">琛屼笟鎺ㄨ繘鑺傚宸茬‘瀹?/span><span class="anchor-sub">2027骞撮獙鏀惰妭鐐规槸鍒氭€ц姹?/span></div></div>
+          <div class="anchor-script-inline"><strong>鏍规嵁鍥借祫濮?9鍙锋枃锛堝浗璧勫彂銆?022銆?9鍙凤級瑕佹眰锛?027骞村簳鍓嶏紝"2+8+N"浣撶郴涓殑鍏ぇ閲嶇偣琛屼笟瀹屾垚100%淇″垱鏇夸唬锛屽尰鐤楁槸鍏ぇ琛屼笟涔嬩竴銆?/strong>杩欐槸鍒氭€ц姹傦紝涓嶆槸鎸囧鎬ф剰瑙併€?
+
+娉細79鍙锋枃涓哄浗璧勫鍐呴儴鏂囦欢锛屾湭鍦ㄥ畼缃戜笂鍏紑鍏ㄦ枃銆傚叾鏍稿績瑕佹眰锛?027骞村簳瀹屾垚鏇夸唬锛夊凡琚瀹跺畼鏂瑰獟浣撴彺寮曠‘璁わ紝渚嬪锛?a href="https://www.eet-china.com/mp/a421111.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.eet-china.com/mp/a421111.html</a>
+
+<strong>宸ヤ俊閮ㄣ€婂尰鑽伐涓氭暟鏅哄寲杞瀷瀹炴柦鏂规锛?025鈥?027骞达級銆嬶紙2025骞?鏈堝彂甯冿級鏄庣‘锛?/strong>鎺ㄥ姩鏂颁竴浠ｄ俊鎭妧鏈笌鍖昏嵂浜т笟閾炬繁搴﹁瀺鍚堬紝鍔犲揩鎺ㄨ繘鍖昏嵂宸ヤ笟鏁版櫤鍖栬浆鍨嬨€傛柟妗堝皢"鍩虹璁炬柦鍗囩骇"鍒椾负閲嶇偣浠诲姟锛岃姹?钀藉疄宸ヤ笟鎿嶄綔绯荤粺鍜屼紒涓氫俊鎭郴缁熺殑缃戠粶瀹夊叏闃叉姢瑕佹眰"銆?
+
+鏉ユ簮锛?a href="https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2025/art_13998d1c720e41438c5d25a943101f76.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2025/art_13998d1c720e41438c5d25a943101f76.html</a>
+
+<div class="an-summary">娉曞緥銆佽鏀挎硶瑙勩€侀儴闂ㄨ绔犮€佽涓氳鍒掑凡鏋勬垚瀹屾暣鐨勬斂绛栫害鏉熶綋绯汇€傛暟鎹簱鍥戒骇鍖栦笉鏄涓嶈鐨勯€夋嫨棰橈紝鑰屾槸"鍦ㄤ粈涔堟椂闂寸獥鍙ｅ唴瀹屾垚"鐨勮鍒掗銆傚欢鍚庢剰鍛崇潃鍙敤绐楀彛缂╃煭銆佸彲閫夋柟妗堟敹绐勩€佸悎瑙勯闄╀笂鍗囥€?/div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 杈炬ⅵ浠峰€?鍗＄墖 -->
+    <div class="anchor-card">
+      <div class="flow-swap-title">杈炬ⅵ浠峰€?/div>
+      <div class="anchor-inline">
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓€</span><div><span class="anchor-name">鎶€鏈兘鍔涘凡閫氳繃鍏抽敭琛屼笟楠岃瘉</span><span class="anchor-sub">閲戣瀺绾ч珮鍙敤锛岀敓浜х幆澧冨彲楠岃瘉</span></div></div>
+          <div class="anchor-script-inline">杈炬ⅵ鏁版嵁搴撳凡鍦ㄩ噾铻嶄氦鏄撱€佺數鍔涜皟搴︺€佺數淇¤璐圭瓑瀵规暟鎹竴鑷存€с€佺郴缁熷彲鐢ㄦ€ц姹傛瀬楂樼殑鍏抽敭棰嗗煙瀹炵幇搴旂敤銆傝繖浜涙槸鍏紑鍙煡鐨勮涓氫簨瀹烇紝涓嶆槸瀹為獙瀹ゆ暟鎹€?
+
+鎻愪緵RPO=0銆丷TO&lt;15绉掔殑楂樺彲鐢ㄩ珮鎬ц兘淇濋殰銆傝揪姊﹁縼绉讳簲姝ユ硶閰嶅悎杩佺Щ璇勪及宸ュ叿銆佹暟鎹悓姝ヨ蒋浠讹紙DMDRS锛夈€佽嚜鍔ㄦ牎楠屽伐鍏凤紝瀹炵幇缁撴瀯鍖栭闄╃鎺с€?/div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">浜?/span><div><span class="anchor-name">鍖荤枟琛屼笟鐢熸€佸凡鍏峰</span><span class="anchor-sub">50浣欏澶撮儴ISV娣卞害閫傞厤</span></div></div>
+          <div class="anchor-script-inline">鍦ㄥ尰鐤楅鍩燂紝杈炬ⅵ宸茬粡涓?0浣欏澶撮儴鍖荤枟ISV瀹屾垚娣卞害閫傞厤锛堝崼瀹佸仴搴枫€佷笢杞€佷笢鍗庡尰涓恒€佸垱涓氭収搴风瓑锛夛紝瑕嗙洊HIS銆丒MR銆丩IS銆丳ACS鏍稿績鍖荤枟淇℃伅鍖栬蒋浠跺巶鍟嗐€?
+
+杩欐剰鍛崇潃淇℃伅绉戝湪鎺ㄨ繘鏁版嵁搴撳浗浜у寲鏃讹紝涓嶉渶瑕佷粠闆跺紑濮嬪崗璋冨巶鍟嗛€傞厤锛岃揪姊﹀師鍘傚凡缁忓畬鎴愪簡鍓嶆湡鐢熸€佸噯澶囧伐浣溿€傚叿浣撻厤鍚堝埌浠€涔堢▼搴︼紝鍙互鍦ㄨ瘎浼伴樁娈典竴璧风‘璁わ紝涓嶄細鎶婂崗璋冨帇鍔涙帹缁欎俊鎭銆?/div>
+        </div>
+        <div class="anchor-row-item" onclick="this.classList.toggle('open')">
+          <div class="anchor-row-top"><span class="anchor-let">涓?/span><div><span class="anchor-name">瀹炶返妗堜緥宸插彲楠岃瘉</span><span class="anchor-sub">鍏ㄥ浗棣栧涓夌敳鍖婚櫌鍏ㄦ爤鍥戒骇鍖栧凡绋冲畾杩愯涓ゅ勾</span></div></div>
+          <div class="anchor-script-inline"><strong>鍘﹂棬澶у闄勫睘鎴愬姛鍖婚櫌锛?/strong>71涓笟鍔＄郴缁?10鍒嗛挓瀹屾垚杩佺Щ锛岀疮璁¤縼绉?1浜挎潯鏁版嵁锛屽叏鍥介涓笁鐢插尰闄㈠叏鏍堝浗浜у寲妗堜緥锛屽凡绋冲畾杩愯瓒呬袱骞淬€?
+
+鏉ユ簮锛?a href="http://www.datayuan.cn/article/21449.htm" target="_blank" style="color:inherit;text-decoration:underline;">http://www.datayuan.cn/article/21449.htm</a>
+
+<strong>绂忓窞甯傜涓€鎬诲尰闄€佺宸炲競绗簩鎬诲尰闄細</strong>40浣欎釜鏍稿績涓氬姟绯荤粺鍏ㄩ潰鍒囨崲杈炬ⅵ鏁版嵁搴擄紝渚濇墭楂樺彲鐢ㄩ泦缇ゅ疄鐜板闄㈠尯鏁版嵁浜掕仈浜掗€氥€?
+
+鏉ユ簮锛?a href="https://www.chinaz.com/2026/0423/1748325.shtml" target="_blank" style="color:inherit;text-decoration:underline;">https://www.chinaz.com/2026/0423/1748325.shtml</a>
+
+<strong>娌冲寳鐪佸叏姘戝仴搴蜂俊鎭钩鍙帮細</strong>鍩轰簬杈炬ⅵ鏁版嵁搴撳钩婊戞浛浠ｅ浗澶栨暟鎹簱锛屾眹鑱氬叏鐪佽秴7000涓囧父浣忎汉鍙ｅ仴搴锋。妗堬紝鑱旈€?60浣欏浜岀骇浠ヤ笂鍏珛鍖婚櫌銆?涓囦綑瀹跺熀灞傚尰鐤楁満鏋勩€?
+
+鏉ユ簮锛?a href="https://www.modb.pro/db/2034447753825312768" target="_blank" style="color:inherit;text-decoration:underline;">https://www.modb.pro/db/2034447753825312768</a>
+
+<div class="an-summary">鍏堣鑰呯殑瀹炶返鏁版嵁璇佹槑锛氶闄╁彲鎺э紝鑺傚鍙敱鍖婚櫌涓诲锛屼俊鎭鐨勫伐浣滈噺闆嗕腑鍦ㄥ喅绛栬€屼笉鏄墽琛屻€?/div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 浜夊彇涓嬩竴姝ャ€愬浐瀹氥€戝崱鐗?-->
+    <div class="mod-card m-next">
+      <div class="flow-lock">
+        <div class="flow-lock-title">浜夊彇涓嬩竴姝?/div>
+        <div class="flow-lock-body">涓讳换锛屼粖澶╂眹鎶ョ殑鏍稿績灏变竴鍙ヨ瘽锛氭暟鎹簱鍥戒骇鍖栫殑绐楀彛宸茬粡鎵撳紑锛屽厛琛岃€呯殑鏁版嵁璇佹槑椋庨櫓鍙帶锛岃揪姊︾殑鎶€鏈拰鏈嶅姟浣撶郴鍙互鏀拺淇℃伅绉戜富鍔ㄦ帹杩涜繖浠朵簨銆?
+
+涓嬩竴姝ユ垜鍙互閭€璇疯揪姊︽妧鏈笓瀹堕拡瀵硅吹闄㈢幇鏈夌郴缁熸灦鏋勫仛涓€涓縼绉诲彲琛屾€ц瘎浼帮紝浜у嚭涓€浠借瘎浼版姤鍛娿€傝繖浠芥姤鍛婂府淇℃伅绉戞懜娓呭搴曪細鍝簺绯荤粺鍙互鍏堣銆佸摢浜涢渶瑕侀噸鐐归獙璇併€佹暣浣撴椂闂磋妭濂忔€庝箞鎺掋€?
+
+<span class="rd">涓嶄骇鐢熶换浣曡垂鐢紝涔熶笉鏋勬垚浠讳綍閲囪喘鎵胯</span>銆傛偍鐪嬪懆鍑犳柟渚匡紵</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ========== 淇″垱閿氱偣锛堢嫭绔嬪弬鑰冭鍥撅級 ========== -->
+<!-- ============================================================ -->
+<div id="content-anchors" class="content hidden anchor-page">
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">涓€</span>銆婂浗鍔￠櫌鍏充簬浜т笟閾句緵搴旈摼瀹夊叏鐨勮瀹氥€?/div>
+    </div>
+    <div class="an-a"><strong>2026骞?鏈堝浗鍔￠櫌浠わ紝鍏?8鏉★紝鑷叕甯冧箣鏃ヨ捣鏂借銆?/strong>杩欐槸鎴戝浗棣栨浠ュ浗鍔￠櫌浠ゅ舰寮忓浜т笟閾句緵搴旈摼瀹夊叏杩涜绯荤粺鎬у埗搴﹀畨鎺掋€?
+
+<strong>绗竷鏉★細</strong>鍥藉寤虹珛鍏抽敭棰嗗煙娓呭崟鍒跺害骞跺疄琛屽姩鎬佽皟鏁淬€侰PU銆佹搷浣滅郴缁熴€佹暟鎹簱绛夊熀纭€杞欢棰嗗煙宸茶鏄庣‘鍒楀叆鍏抽敭鑼冪暣銆?
+
+<strong>绗崄浜屾潯锛?/strong>杩愯惀鑰呭簲褰?瀹炵幇鏍稿績鎶€鏈強鐩稿叧淇℃伅绯荤粺銆佹暟鎹殑瀹夊叏鍙帶"銆?
+
+<strong>绗崄鍏潯锛?/strong>杩濊鑰呭皢琚檺鍒跺弬涓庢斂搴滈噰璐拰鎷涙姇鏍囥€?
+
+<div class="an-summary">鏁版嵁搴撳浗浜у寲宸蹭粠"浜т笟榧撳姳鏂瑰悜"涓婂崌涓?鍥藉姟闄护瑙勫畾鐨勬硶瀹氫箟鍔?銆?/div>
+<div class="an-source"><a href="https://www.gov.cn/zhengce/content/202604/content_7064837.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/zhengce/content/202604/content_7064837.htm</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">浜?/span>銆婂尰鐤楀崼鐢熸満鏋勬暟鎹畨鍏ㄥ拰涓汉淇℃伅淇濇姢绠＄悊鍔炴硶锛堣瘯琛岋級銆?/div>
+    </div>
+    <div class="an-a"><strong>2026骞村垵浜旈儴闂ㄨ仈鍚堝嵃鍙戙€?/strong>鍖荤枟琛屼笟棣栦釜涓撻棬閽堝鏁版嵁瀹夊叏鍜屼釜浜轰俊鎭繚鎶ょ殑閮ㄩ棬瑙勭珷绾х鐞嗗姙娉曘€?
+
+路 鏁版嵁鍒嗙骇闃叉姢锛氭牳蹇?閲嶈/涓€鑸笁绾?
+路 鏁版嵁搴撻』鍘熺敓鏀寔鍔犲瘑銆佸璁°€侀壌鏉冦€佽劚鏁忕瓑鑳藉姏
+路 涓夌骇浠ヤ笂鍖婚櫌HIS/EMR灞炰簬鍏抽敭淇℃伅鍩虹璁炬柦
+路 杩濊澶勭綒锛氳鍛娿€侀珮棰濈綒娆俱€佽矗浠ゅ仠涓氭暣椤?
+
+<div class="an-summary">鏁版嵁搴撳畨鍏ㄨ兘鍔涙槸绛変繚娴嬭瘎鍜岃涓氭鏌ョ殑纭€ч棬妲涖€?/div>
+<div class="an-source"><a href="https://www.sohu.com/a/1005737519_416839" target="_blank" style="color:inherit;text-decoration:underline;">https://www.sohu.com/a/1005737519_416839</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">涓?/span>2026骞村叏鍥藉崼鐢熷仴搴峰伐浣滀細璁?/div>
+    </div>
+    <div class="an-a"><strong>2026骞?鏈堛€?/strong>
+
+路 "鎺ㄨ繘鏁版櫤璧嬭兘"鈥斺€擜I+鍖荤枟鐨勫墠鎻愭槸楂樿川閲忔暟鎹簳搴?
+路 "澧炲姞甯傚煙鍐呮鏌ユ楠屼簰璁ら」鐩?鈥斺€旈渶瑕佸尯鍩熺骇鏁版嵁鍏变韩骞冲彴
+
+<div class="an-summary">鏁版嵁搴曞骇鑳藉姏宸插祵鍏ュ勾搴﹁€冩牳妗嗘灦銆?/div>
+<div class="an-source"><a href="https://www.gov.cn/lianbo/202601/content_7054072.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/lianbo/202601/content_7054072.htm</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">鍥?/span>銆婄揣瀵嗗瀷鍘垮煙鍖诲叡浣撲俊鎭寲鍔熻兘鎸囧紩銆?/div>
+    </div>
+    <div class="an-a"><strong>2025骞?鏈堝彂甯冦€?/strong>棣栨鏄庣‘瑙勫畾鍘垮煙鍖诲叡浣撳熀纭€璁炬柦銆佸熀纭€杞欢锛堟搷浣滅郴缁熴€佷腑闂翠欢銆佹暟鎹簱锛夊繀椤荤鍚堜俊鍒涙爣鍑嗐€?
+
+<div class="an-summary">淇″垱鏇夸唬鍦ㄥ尰鐤楄涓氬凡鍏峰鍙墽琛岀殑鍔熻兘鎸囧紩鏉℃銆?/div>
+<div class="an-source"><a href="https://www.sohu.com/a/872117734_100232921" target="_blank" style="color:inherit;text-decoration:underline;">https://www.sohu.com/a/872117734_100232921</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">浜?/span>銆婂叧浜庝績杩涘拰瑙勮寖"浜哄伐鏅鸿兘+鍖荤枟鍗敓"搴旂敤鍙戝睍鐨勫疄鏂芥剰瑙併€?/div>
+    </div>
+    <div class="an-a"><strong>2025骞?0鏈堜簲閮ㄥ鑱斿悎鍙戞枃銆?/strong>
+
+路 寤烘垚鍥藉鍖荤枟鍋ュ悍鏁版嵁涓績鍜岀伨澶囦腑蹇?
+路 寤虹珛鍏ㄥ浗缁熶竴鍋ュ悍淇℃伅涓荤储寮?
+路 鏋勫缓楂樿川閲忓尰鐤楀仴搴锋暟鎹彲淇℃暟鎹┖闂?
+
+<div class="an-summary">AI+鍖荤枟鐨勫墠鎻愭槸鑷富鍙帶鏁版嵁搴曞骇锛岃秺鏅氬惎鍔紝鍘嗗彶鏁版嵁璐熸媴瓒婃矇閲嶃€?/div>
+<div class="an-source"><a href="https://www.gov.cn/zhengce/zhengceku/202511/content_7047018.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/zhengce/zhengceku/202511/content_7047018.htm</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">鍏?/span>2027骞撮獙鏀惰妭鐐?+ 琛屼笟鍏堣妗堜緥</div>
+    </div>
+    <div class="an-a"><strong>鍥借祫濮?9鍙锋枃锛堝浗璧勫彂銆?022銆?9鍙凤級瑕佹眰锛?027骞村簳鍓嶏紝"2+8+N"浣撶郴涓殑鍏ぇ閲嶇偣琛屼笟瀹屾垚100%淇″垱鏇夸唬锛屽尰鐤楁槸鍏ぇ琛屼笟涔嬩竴銆?/strong>杩欐槸鍒氭€ц姹傦紝涓嶆槸鎸囧鎬ф剰瑙併€?
+
+娉細79鍙锋枃涓哄浗璧勫鍐呴儴鏂囦欢锛屾湭鍦ㄥ畼缃戜笂鍏紑鍏ㄦ枃銆傚叾鏍稿績瑕佹眰锛?027骞村簳瀹屾垚鏇夸唬锛夊凡琚瀹跺畼鏂瑰獟浣撴彺寮曠‘璁わ紝渚嬪锛?a href="https://www.eet-china.com/mp/a421111.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.eet-china.com/mp/a421111.html</a>
+
+2025-2026骞达紝鍖荤枟淇″垱宸蹭粠"鏍囨潌绀鸿寖"杩涘叆"瑙勬ā鍖栧鍒?闃舵銆?
+
+路 绂忓窞涓ゅ鎬诲尰闄細40浣欎釜鏍稿績绯荤粺鍏ㄦ爤鍒囨崲
+路 鏂扮枂绗叚浜烘皯鍖婚櫌锛氬叏鏍堝浗浜у寲锛?灏忔椂瀹屾垚鍏ㄩ噺杩佺Щ
+路 鍘﹂棬澶у闄勫睘鎴愬姛鍖婚櫌锛?9涓簲鐢ㄣ€?1浜挎潯鏁版嵁杩愯涓ゅ勾澶?
+路 鎴愰兘鍏ㄦ皯鍋ュ悍淇℃伅骞冲彴锛氳鐩?3涓尯鍘裤€?500+鍖荤枟鏈烘瀯
+
+浠庤瘎浼板埌涓婄嚎闇€12-18涓湀鈥斺€斾粖骞村惎鍔ㄦ椂闂村厖瑁曘€?
+
+<div class="an-summary">2027骞存槸楠屾敹澶ч檺锛屾椂闂寸獥鍙ｆ鍦ㄦ敹绐勩€?/div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">涓?/span>銆婄綉缁滄暟鎹畨鍏ㄧ鐞嗘潯渚嬨€嬶紙鍥藉姟闄护绗?90鍙凤級</div>
+    </div>
+    <div class="an-a"><strong>2024骞?鏈?0鏃ュ浗鍔￠櫌鍏竷锛?025骞?鏈?鏃ヨ捣鏂借銆?/strong>鏉′緥鏄庣‘瑕佹眰锛氬鐞?000涓囦汉浠ヤ笂涓汉淇℃伅鐨勭綉缁滄暟鎹鐞嗚€咃紝搴斿綋閬靛畧閲嶈鏁版嵁澶勭悊鑰呯殑鐩稿叧瑙勫畾銆備簩绾т互涓婂尰闄㈢殑鎮ｈ€呮暟鎹妯℃櫘閬嶈秴杩囪繖涓€闃堝€笺€?
+
+<div class="an-summary">鏁版嵁搴撳畨鍏ㄥ悎瑙勫凡浠?鎺ㄨ崘"涓婂崌涓?娉曡寮哄埗"銆?/div>
+<div class="an-source"><a href="https://www.gov.cn/gongbao/2024/issue_11646/202410/content_6980863.htm" target="_blank" style="color:inherit;text-decoration:underline;">https://www.gov.cn/gongbao/2024/issue_11646/202410/content_6980863.htm</a></div></div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title"><span class="an-tag">鍏?/span>銆婂尰鑽伐涓氭暟鏅哄寲杞瀷瀹炴柦鏂规锛?025鈥?027骞达級銆?/div>
+    </div>
+    <div class="an-a"><strong>宸ヤ俊閮?025骞?鏈堝彂甯冦€?/strong>鎺ㄥ姩鏂颁竴浠ｄ俊鎭妧鏈笌鍖昏嵂浜т笟閾炬繁搴﹁瀺鍚堬紝鍔犲揩鎺ㄨ繘鍖昏嵂宸ヤ笟鏁版櫤鍖栬浆鍨嬨€?
+
+路 灏?鍩虹璁炬柦鍗囩骇"鍒椾负閲嶇偣浠诲姟
+路 瑕佹眰"钀藉疄宸ヤ笟鎿嶄綔绯荤粺鍜屼紒涓氫俊鎭郴缁熺殑缃戠粶瀹夊叏闃叉姢瑕佹眰"
+路 鍖荤枟淇℃伅绯荤粺锛堝惈鏁版嵁搴擄級鐨勮嚜涓诲彲鎺ф槸鏁版櫤鍖栬浆鍨嬬殑鍩虹璁炬柦鍓嶆彁
+
+<div class="an-summary">鏁版櫤鍖栬浆鍨嬫斂绛栧凡鏄庣‘灏嗗熀纭€璁炬柦锛堝惈鏁版嵁搴擄級鑷富鍙帶鍒椾负鍓嶆彁鏉′欢銆?/div>
+<div class="an-source"><a href="https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2025/art_13998d1c720e41438c5d25a943101f76.html" target="_blank" style="color:inherit;text-decoration:underline;">https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2025/art_13998d1c720e41438c5d25a943101f76.html</a></div></div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- ========== 甯歌闂 ========== -->
+<!-- ============================================================ -->
+<div id="content-faq" class="content hidden">
+
+  <div class="section-label" style="margin-top:0;">甯歌闂锛堢敤浜庡簲瀵规妧鏈拷闂級</div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title">锛堜竴锛夊浗浜ф暟鎹簱鍒板簳琛屼笉琛岋紵</div>
+    </div>
+    <div class="an-a">鍥戒骇鏁版嵁搴撹兘鍚︽壙杞藉尰鐤楁牳蹇冧笟鍔＄郴缁燂紝杩欎竴鐤戦棶宸插湪澶氫釜灞傞潰寰楀埌楠岃瘉銆備粠琛屼笟搴旂敤骞垮害鏉ョ湅锛屽浗浜ф暟鎹簱鍦ㄩ噾铻嶄氦鏄撱€佺數鍔涜皟搴︺€佺數淇¤璐圭瓑瀵规暟鎹竴鑷存€с€佺郴缁熷彲鐢ㄦ€ц姹傛瀬楂樼殑鍏抽敭棰嗗煙宸插疄鐜拌妯″寲搴旂敤锛屽叾鎶€鏈垚鐔熷害缁忚繃浜嗗厖鍒嗘楠屻€?
+
+鍏蜂綋鍒板尰鐤楄涓氾紝2023骞?2鏈堝帵闂ㄥぇ瀛﹂檮灞炴垚鍔熷尰闄㈠畬鎴愪簡鍏ㄥ浗棣栧鍏ㄦ爤淇″垱鏀归€狅紝灏咹IS銆丒MR绛夊叏閮ㄤ笟鍔＄郴缁熷钩绋宠縼绉昏嚦杈炬ⅵ鏁版嵁搴擄紝绯荤粺杩愯鑷充粖淇濇寔绋冲畾銆傝揪姊︽暟鎹簱浜у搧鐩墠宸插湪200浣欏鍖荤枟绠＄悊鏈烘瀯銆?0浣欏鍖婚櫌钀藉湴搴旂敤锛屽疄鐜颁簡浠庡鍥翠俊鎭寲绯荤粺鍒版牳蹇冭瘖鐤椾笟鍔＄郴缁熺殑鍏ㄩ摼鏉℃敮鎾戙€?/div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title">锛堜簩锛夎揪姊︾殑浼樺娍鈥斺€旇嚜涓荤爺鍙戣矾绾?/div>
+    </div>
+    <div class="an-a">鍦ㄦ妧鏈矾绾块€夋嫨涓婏紝杈炬ⅵ濮嬬粓鍧氭寔鑷富鐮斿彂锛屽畬鍏ㄦ帉鎻℃簮浠ｇ爜鐨勬暟鎹簱浜у搧鑳藉纭繚鎶€鏈彂灞曠殑鑷富鏉冿紝浠庢牴鏈笂閬垮厤鍥犲閮ㄧ幆澧冨彉鍖栧鑷寸殑绯荤粺鎬ч闄┿€傝揪姊︽暟鎹簱宸插畬鎴愭墍鏈夋牳蹇冧唬鐮佺殑鑷富鐮斿彂锛屽苟閫氳繃浜嗗涓潈濞佹満鏋勭殑鑷富鍘熷垱娴嬭瘯璁よ瘉銆?
+
+鐩墠锛岃揪姊︽暟鎹簱浜у搧鍦ㄦ€ц兘鎸囨爣涓婂凡杈惧埌鍥介檯鍏堣繘姘村钩锛屾敮鎸佸尰鐤楁牳蹇冪郴缁熺殑楂樺苟鍙戜笟鍔″満鏅拰7脳24灏忔椂涓嶉棿鏂繍琛岃姹傘€?/div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title">锛堜笁锛夎縼绉婚闄╁浣曠鎺э紵</div>
+    </div>
+    <div class="an-a">杈炬ⅵ宸叉瀯寤轰簡瑕嗙洊椤圭洰璋冪爺銆佹灦鏋勮鍒掋€佺Щ妞嶉獙璇併€佷笂绾垮疄鏂姐€佽繍缁寸洃鎺х殑瀹屾暣杩佺Щ璺緞鍜屼綋绯诲寲鏂规硶璁恒€?
+
+鍦ㄦ暟鎹縼绉绘柟闈紝浣跨敤杈炬ⅵ鑷爺鐨勬暟鎹疄鏃跺悓姝ヨ蒋浠禗MDRS杩涜瀛橀噺鏁版嵁瑁呰浇涓庢瘮瀵癸紝鍐嶅杩囩▼鏁版嵁杩涜澧為噺鍚屾銆傜粨鍚堣縼绉诲洖閫€鏂规锛屽彲鏋佸ぇ鍦板帇缂╁仠鏈虹獥鍙ｏ紝淇濋殰鍖荤枟涓氬姟24灏忔椂涓嶉棿鏂繍琛屻€?
+
+鍚屾椂锛岃揪姊︽暟鎹簱瀵筄racle鍜孧ySQL绛変富娴佹暟鎹簱鍏峰楂樺吋瀹规€э紝鏀寔浣庝唬鐮佺敋鑷抽浂浠ｇ爜瀹屾垚搴旂敤杩佺Щ鏀归€犮€?/div>
+  </div>
+
+  <div class="an-item" onclick="this.classList.toggle('open')">
+    <div class="an-q">
+      <div class="an-q-title">锛堝洓锛夊師鍘傛湇鍔′繚闅溾€斺€旀湰鍦板寲鍏滃簳</div>
+    </div>
+    <div class="an-a">杈炬ⅵ鍦ㄥ叏鍥藉鍦拌鏈夋湰鍦板寲鍘熷巶鏈嶅姟鍥㈤槦锛屽彲鍦ㄨ縼绉绘柟妗堣璁￠樁娈靛氨浠嬪叆锛屽仛濂藉厖鍒嗙殑娴嬭瘯鍜屼紭鍖栥€?
+
+鍖荤枟淇℃伅绯荤粺閬囧埌鐨勮澶氶棶棰樺叿鏈夌嫭鐗规€э紝鍘熷巶鍥㈤槦鑳藉鍩轰簬瀵逛骇鍝佺殑娣卞害鐞嗚В杩涜鎶€鏈敾鍏筹紝鍦ㄦ牳蹇冧笟鍔＄郴缁熶笂绾垮悗鎻愪緵鎸佺画鎬х殑杩愮淮淇濋殰銆?/div>
+  </div>
+
+</div>
+
+<script>
+  function switchAudience(a) {
+    document.querySelectorAll('.audience-btn').forEach(function(b){ b.classList.remove('active'); });
+    var btn = document.querySelector('[data-audience="'+a+'"]');
+    if(btn) btn.classList.add('active');
+    document.querySelectorAll('[id^="content-"]').forEach(function(c){ c.classList.add('hidden'); });
+    var el = document.getElementById('content-'+a);
+    if(el) el.classList.remove('hidden');
+  }
+  function switchDuration(a, d) {
+    var c = document.getElementById('content-'+a);
+    if(!c) return;
+    c.querySelectorAll('.duration-tab').forEach(function(t){ t.classList.remove('active'); });
+    c.querySelectorAll('.duration-tab').forEach(function(t){
+      if (d==='1min' && t.textContent.indexOf('1') !== -1) t.classList.add('active');
+      if (d==='5min' && t.textContent.indexOf('5') !== -1) t.classList.add('active');
+    });
+    ['1min','5min'].forEach(function(x){
+      var el = document.getElementById(a+'-'+x);
+      if (el) el.classList.toggle('hidden', x !== d);
+    });
+  }
+</script>
+
 </body>
 </html>
